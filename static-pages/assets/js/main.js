@@ -49,3 +49,11 @@ if(typeof PerfectScrollbar == 'function') {
 
 // Scroll into active sidebar
 document.querySelector('.sidebar-item.active').scrollIntoView(false)
+
+function upload(e) {
+    var file = e.files[0];
+        if (!file) {
+            return;
+        }
+        e.value = '';
+    }

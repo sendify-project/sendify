@@ -201,8 +201,8 @@
                                 <div class="card-footer">
                                     <div class="d-flex flex-grow-1 ml-4">
                                         <input type="text" class="form-control" placeholder="Type your message..">
-                                        <button class="btn btn-outline-secondary" type="button" id="file"><i class="bi bi-paperclip"></i></button>
-
+                                        <input id="file" type="file" onchange="upload(this)" style="display: none" />
+                                        <button class="btn btn-outline-secondary" type="button" id="button" onclick="file.click()"><i class="bi bi-paperclip"></i></button>
                                     </div>
                                 </div>
                             </div>

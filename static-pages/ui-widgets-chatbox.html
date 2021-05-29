@@ -129,9 +129,8 @@
                                     <div class="message-form d-flex flex-direction-column align-items-center">
                                         <div class="d-flex flex-grow-1 ml-4">
                                             <input type="text" class="form-control" placeholder="Type your message..">
-                                            <button class="btn btn-outline-secondary" type="button" id="file"><i class="bi bi-paperclip"></i></button>
-                                            
-
+                                            <input id="file" type="file" onchange="upload(this)" style="display: none" />
+                                            <button class="btn btn-outline-secondary" type="button" id="button" onclick="file.click()"><i class="bi bi-paperclip"></i></button>
                                         </div>
                                     </div>
                                     
@@ -151,9 +150,19 @@
             </footer>
         </div>
     </div>
+    
+    <script>
+        function upload(e) {
+            var file = e.files[0];
+            if (!file) {
+                return;
+            }
+            e.value = '';
+        }
+    </script>
+
     <script src="assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
     <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/extensions/sweetalert2.js"></script>
 
     <script src="assets/js/main.js"></script>
 </body>

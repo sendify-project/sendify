@@ -8,6 +8,11 @@
     color: #fff
 }
 
+.chat.chat-left .chat-body {
+    text-align: left!important;
+    clear: both!important;
+}
+
 .chat .chat-message {
     text-align: left!important;
     float: right!important;
@@ -26,4 +31,9 @@
 .chat-message>img {
     width: 300px;
     height: auto;
+}
+
+.chat-message>.avatar {
+    display: table;
+    margin-bottom: 0.3rem;
 }

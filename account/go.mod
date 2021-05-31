@@ -1,4 +1,4 @@
-module github.com/minghsu0107/saga-account
+module github.com/minghsu0107/sendify/account
 
 go 1.15
 
@@ -18,6 +18,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.4.4
+	github.com/google/subcommands v1.2.0 // indirect
 	github.com/google/wire v0.4.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
@@ -25,6 +26,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/minghsu0107/saga-account v1.0.0
 	github.com/minghsu0107/saga-pb v0.5.5
 	github.com/onsi/ginkgo v1.15.2
 	github.com/onsi/gomega v1.11.0
@@ -38,7 +40,8 @@ require (
 	go.opencensus.io v0.23.0
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
-	golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea // indirect
+	golang.org/x/sys v0.0.0-20210531080801-fdfd190a6549 // indirect
+	golang.org/x/tools v0.1.2 // indirect
 	google.golang.org/api v0.41.0 // indirect
 	google.golang.org/genproto v0.0.0-20210524171403-669157292da3 // indirect
 	google.golang.org/grpc v1.38.0

@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/minghsu0107/saga-account/config"
@@ -113,104 +114,14 @@ func (r *Router) RefreshToken(c *gin.Context) {
 	}
 }
 
-// GetCustomerPersonalInfo gets customer personal info
-func (r *Router) GetCustomerPersonalInfo(c *gin.Context) {
+func (r *Router) Auth(c *gin.Context) {
 	customerID, ok := c.Request.Context().Value(config.CustomerKey).(uint64)
 	if !ok {
 		response(c, http.StatusUnauthorized, presenter.ErrUnautorized)
 		return
 	}
-	personalInfo, err := r.customerSvc.GetCustomerPersonalInfo(c.Request.Context(), customerID)
-	switch err {
-	case repo.ErrCustomerNotFound:
-		response(c, http.StatusNotFound, repo.ErrCustomerNotFound)
-	case nil:
-		c.JSON(http.StatusOK, &presenter.CustomerPersonalInfo{
-			FirstName: personalInfo.FirstName,
-			LastName:  personalInfo.LastName,
-			Email:     personalInfo.Email,
-		})
-		return
-	default:
-		response(c, http.StatusInternalServerError, presenter.ErrServer)
-		return
-	}
-}
-
-// GetCustomerShippingInfo gets customer shipping info
-func (r *Router) GetCustomerShippingInfo(c *gin.Context) {
-	customerID, ok := c.Request.Context().Value(config.CustomerKey).(uint64)
-	if !ok {
-		response(c, http.StatusUnauthorized, presenter.ErrUnautorized)
-		return
-	}
-	shippingInfo, err := r.customerSvc.GetCustomerShippingInfo(c.Request.Context(), customerID)
-	switch err {
-	case repo.ErrCustomerNotFound:
-		response(c, http.StatusNotFound, repo.ErrCustomerNotFound)
-	case nil:
-		c.JSON(http.StatusOK, &presenter.CustomerShippingInfo{
-			Address:     shippingInfo.Address,
-			PhoneNumber: shippingInfo.PhoneNumber,
-		})
-		return
-	default:
-		response(c, http.StatusInternalServerError, presenter.ErrServer)
-		return
-	}
-}
-
-// UpdateCustomerPersonalInfo updates customer personal info
-func (r *Router) UpdateCustomerPersonalInfo(c *gin.Context) {
-	var personalInfo presenter.CustomerPersonalInfo
-	if err := c.ShouldBindJSON(&personalInfo); err != nil {
-		response(c, http.StatusBadRequest, presenter.ErrInvalidParam)
-		return
-	}
-	customerID, ok := c.Request.Context().Value(config.CustomerKey).(uint64)
-	if !ok {
-		response(c, http.StatusUnauthorized, presenter.ErrUnautorized)
-		return
-	}
-	err := r.customerSvc.UpdateCustomerPersonalInfo(c.Request.Context(), customerID, &domain_model.CustomerPersonalInfo{
-		FirstName: personalInfo.FirstName,
-		LastName:  personalInfo.LastName,
-		Email:     personalInfo.Email,
-	})
-	switch err {
-	case nil:
-		c.JSON(http.StatusOK, presenter.OkMsg)
-		return
-	default:
-		response(c, http.StatusInternalServerError, presenter.ErrServer)
-		return
-	}
-}
-
-//  UpdateCustomerShippingInfo updates customer shipping info
-func (r *Router) UpdateCustomerShippingInfo(c *gin.Context) {
-	var shippingInfo presenter.CustomerShippingInfo
-	if err := c.ShouldBindJSON(&shippingInfo); err != nil {
-		response(c, http.StatusBadRequest, presenter.ErrInvalidParam)
-		return
-	}
-	customerID, ok := c.Request.Context().Value(config.CustomerKey).(uint64)
-	if !ok {
-		response(c, http.StatusUnauthorized, presenter.ErrUnautorized)
-		return
-	}
-	err := r.customerSvc.UpdateCustomerShippingInfo(c.Request.Context(), customerID, &domain_model.CustomerShippingInfo{
-		Address:     shippingInfo.Address,
-		PhoneNumber: shippingInfo.PhoneNumber,
-	})
-	switch err {
-	case nil:
-		c.JSON(http.StatusOK, presenter.OkMsg)
-		return
-	default:
-		response(c, http.StatusInternalServerError, presenter.ErrServer)
-		return
-	}
+	c.Writer.Header().Set("X-User-Id", strconv.FormatUint(customerID, 10))
+	c.JSON(http.StatusOK, presenter.OkMsg)
 }
 
 func response(c *gin.Context, httpCode int, err error) {

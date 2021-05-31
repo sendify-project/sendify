@@ -7,8 +7,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minghsu0107/saga-account/dep"
 	"github.com/minghsu0107/saga-account/infra/cache"
+	"github.com/minghsu0107/sendify/account/dep"
 	log "github.com/sirupsen/logrus"
 )
 

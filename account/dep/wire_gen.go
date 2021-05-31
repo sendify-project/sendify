@@ -7,11 +7,8 @@ package dep
 
 import (
 	"github.com/minghsu0107/saga-account/config"
-	"github.com/minghsu0107/saga-account/infra"
 	"github.com/minghsu0107/saga-account/infra/cache"
 	"github.com/minghsu0107/saga-account/infra/db"
-	"github.com/minghsu0107/saga-account/infra/grpc"
-	"github.com/minghsu0107/saga-account/infra/http"
 	"github.com/minghsu0107/saga-account/infra/http/middleware"
 	pkg2 "github.com/minghsu0107/saga-account/infra/observe"
 	"github.com/minghsu0107/saga-account/pkg"
@@ -19,6 +16,8 @@ import (
 	"github.com/minghsu0107/saga-account/repo/proxy"
 	"github.com/minghsu0107/saga-account/service/account"
 	"github.com/minghsu0107/saga-account/service/auth"
+	"github.com/minghsu0107/sendify/account/infra"
+	"github.com/minghsu0107/sendify/account/infra/http"
 )
 
 // Injectors from wire.go:
@@ -55,13 +54,12 @@ func InitializeServer() (*infra.Server, error) {
 	router := http.NewRouter(jwtAuthService, customerService)
 	jwtAuthChecker := middleware.NewJWTAuthChecker(configConfig, jwtAuthService)
 	server := http.NewServer(configConfig, engine, router, jwtAuthChecker)
-	grpcServer := grpc.NewGRPCServer(configConfig, jwtAuthService)
 	observibilityInjector, err := pkg2.NewObservibilityInjector(configConfig)
 	if err != nil {
 		return nil, err
 	}
 	localCacheCleaner := cache.NewLocalCacheCleaner(clusterClient, localCache)
-	infraServer := infra.NewServer(server, grpcServer, observibilityInjector, localCacheCleaner)
+	infraServer := infra.NewServer(server, observibilityInjector, localCacheCleaner)
 	return infraServer, nil
 }
 

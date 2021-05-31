@@ -61,21 +61,16 @@ func NewServer(config *conf.Config, engine *gin.Engine, router *Router, jwtAuthC
 
 // RegisterRoutes method register all endpoints
 func (s *Server) RegisterRoutes() {
-	apiGroup := s.Engine.Group("/api")
+	authGroup := s.Engine.Group("/api")
 	{
-		authGroup := apiGroup.Group("/auth")
-		{
-			authGroup.POST("/signup", s.Router.SignUp)
-			authGroup.POST("/login", s.Router.Login)
-			authGroup.POST("/refresh", s.Router.RefreshToken)
-		}
-		withJWT := apiGroup.Group("/info")
+		authGroup.POST("/signup", s.Router.SignUp)
+		authGroup.POST("/login", s.Router.Login)
+		authGroup.POST("/refresh", s.Router.RefreshToken)
+
+		withJWT := authGroup.Group("/auth")
 		withJWT.Use(s.jwtAuthChecker.JWTAuth())
 		{
-			withJWT.GET("/account", s.Router.GetCustomerPersonalInfo)
-			withJWT.GET("/shipping", s.Router.GetCustomerShippingInfo)
-			withJWT.POST("/account", s.Router.UpdateCustomerPersonalInfo)
-			withJWT.POST("/shipping", s.Router.UpdateCustomerShippingInfo)
+			withJWT.Any("/", s.Router.Auth)
 		}
 	}
 }
@@ -86,14 +81,8 @@ func (s *Server) Run() error {
 	addr := ":" + s.Port
 	s.svr = &http.Server{
 		Addr: addr,
-		// default propagation format: B3
 		Handler: &ochttp.Handler{
 			Handler: s.Engine,
-			// IsHealthEndpoint holds the function to use for determining if the
-			// incoming HTTP request should be considered a health check. This is in
-			// addition to the private isHealthEndpoint func which may also indicate
-			// tracing should be skipped.
-			// IsHealthEndpoint: nil,
 		},
 	}
 	log.Infoln("http server listening on ", addr)

@@ -28,7 +28,7 @@
     border-radius: .267rem!important
 }
 
-.chat-message>img {
+.chat-message>a>img {
     width: 300px;
     height: auto;
 }

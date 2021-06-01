@@ -83,6 +83,8 @@ steps:
   - git push ssh://git@$MANIFEST_HOST/$MANIFEST_USER/$MANIFEST_REPO.git
   depends_on:
     - push-registry
+  when:
+    event: push
 trigger:
   branch:
   - main

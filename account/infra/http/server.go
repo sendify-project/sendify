@@ -70,7 +70,7 @@ func (s *Server) RegisterRoutes() {
 		withJWT := authGroup.Group("/auth")
 		withJWT.Use(s.jwtAuthChecker.JWTAuth())
 		{
-			withJWT.Any("/", s.Router.Auth)
+			withJWT.Any("", s.Router.Auth)
 		}
 	}
 }

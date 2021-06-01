@@ -121,7 +121,7 @@ func (r *Router) Auth(c *gin.Context) {
 		return
 	}
 	c.Writer.Header().Set("X-User-Id", strconv.FormatUint(customerID, 10))
-	c.JSON(http.StatusOK, presenter.OkMsg)
+	c.Status(http.StatusOK)
 }
 
 func response(c *gin.Context, httpCode int, err error) {

@@ -63,7 +63,27 @@ steps:
     - test
   when:
     event: push
-
+- name: update-manifests
+  pull: if-not-exists
+  image: line/kubectl-kustomize:1.20.2-3.9.1
+  environment:
+    SSH_KEY:
+      from_secret: ssh_key
+    CONTAINER_REGISTRY: docker.io
+    CONTAINER_REPO: minghsu0107/sendify-account
+    MANIFEST_HOST: github.com
+    MANIFEST_USER: minghsu0107
+    MANIFEST_REPO: sendify-manifests
+    ENVIRONMENT: staging
+  commands:
+  - apk update && apk add --no-cache git && apk add --no-cache openssh
+  - mkdir -p ~/.ssh && echo $SSH_KEY | base64 -d > ~/.ssh/id_rsa && chmod 700 ~/.ssh/id_rsa && ssh-keyscan $MANIFEST_HOST >> ~/.ssh/known_hosts
+  - rm -rf $MANIFEST_REPO && git clone ssh://git@$MANIFEST_HOST/$MANIFEST_USER/$MANIFEST_REPO.git
+  - cd $MANIFEST_REPO/$ENVIRONMENT && kustomize edit set image $CONTAINER_REPO:$DRONE_COMMIT_SHA
+  - git add . && git commit -m "update to $DRONE_COMMIT_SHA"
+  - git push ssh://git@$MANIFEST_HOST/$MANIFEST_USER/$MANIFEST_REPO.git
+  depends_on:
+    - push-registry
 trigger:
   branch:
   - main

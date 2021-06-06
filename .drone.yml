@@ -85,7 +85,7 @@ trigger:
 ---
 kind: pipeline
 type: docker
-name: chat-client
+name: chat
 
 platform:
   os: linux
@@ -106,12 +106,22 @@ x-build-docker-image: &x-build-docker-image
       from_secret: docker_password
 
 steps:
-- name: push-registry
+- name: client-push-registry
   <<: *x-build-docker-image
   settings:
     repo: minghsu0107/sendify-chat-client
     dockerfile: ./chat-client/dockerfile
     context: ./chat-client
+  depends_on:
+    - clone
+  when:
+    event: push
+- name: server-push-registry
+  <<: *x-build-docker-image
+  settings:
+    repo: minghsu0107/sendify-chat-server
+    dockerfile: ./chat-server/dockerfile
+    context: ./chat-server
   depends_on:
     - clone
   when:

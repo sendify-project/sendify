@@ -7,7 +7,8 @@ function ChatPage() {
   const [currentChannel, setCurrentChannel] = useState({
     name: 'ntuim',
     members: [{ name: 'Katherine' }, { name: 'Wendy' }, { name: 'Ming' }, { name: 'Sam' }],
-    message: [],
+    message: [], // TODO {text, time, sender}
+    channals: [], // TODO 
   })
 
   const handleClick = (e) => {
@@ -43,7 +44,7 @@ function ChatPage() {
               </li> */}
 
               <li class='sidebar-title'>All Channels</li>
-
+              {/* TODO */}
               <SidebarItem text='ntuim' />
               <SidebarItem text='family' />
               <SidebarItem text='wendy' />
@@ -88,8 +89,9 @@ function ChatPage() {
                   </div>
                   <div class='card-body pt-4 bg-grey' style={{ overflow: 'auto' }}>
                     <div class='chat-content'>
-                      <ChatItem text='Hi Alfy, how can i help you?' time='1:05 PM' />
-                      <ChatItem text='幹你娘?' time='1:05 PM' left />
+                      {/* TODO */}
+                      <ChatItem text='Hi Alfy, how can i help you?' time='1:05 PM' sender='me' />
+                      <ChatItem text='幹你娘?' time='1:05 PM' sender='A' />
                     </div>
                   </div>
                   <div class='card-footer'>

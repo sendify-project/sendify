@@ -21,6 +21,7 @@ function SignupPage({ setUser }) {
       .then((res) => {
         if (res.data.access_token) {
           console.log(res.data.access_token)
+          localStorage.setItem('access_token', res.data.access_token)
           setUser((prev) => ({
             ...prev,
             email,

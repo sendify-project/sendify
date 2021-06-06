@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import SidebarItem from 'components/sidebar-item'
 import ChatItem from 'components/chat-item'
 
-function ChatPage() {
+function ChatPage({ logout }) {
   const [currentChannel, setCurrentChannel] = useState({
     name: 'ntuim',
     members: [{ name: 'Katherine' }, { name: 'Wendy' }, { name: 'Ming' }, { name: 'Sam' }],
@@ -26,7 +26,10 @@ function ChatPage() {
                   <img src='assets/images/logo/logo.png' alt='Logo' />
                 </Link>
               </div>
-              <div class='toggler'>
+              <button className='btn btn-blue' onClick={logout}>
+                Logout
+              </button>
+              <div class='toggler d-sm-none'>
                 <a href='#' class='sidebar-hide d-xl-none d-block'>
                   <i class='bi bi-x bi-middle'></i>
                 </a>

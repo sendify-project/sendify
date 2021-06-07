@@ -18,10 +18,10 @@ def files():
     user_id = request.headers.get('X-User-Id')
     channel_id = request.headers.get('X-Channel-Id')
 
-    access_key = os.getenv("ACCESS_KEY", "XJ2hzpkN")
-    secret_key = os.getenv("SECRET_KEY", "LkYatYm5Ke4BpnQk")
+    access_key = os.getenv("ACCESS_KEY")
+    secret_key = os.getenv("SECRET_KEY")
     expire_days = int(os.getenv("EXPIRE_DAYS", "10"))
-    s3_host = os.getenv("S3_HOST", 'http://linux1.csie.ntu.edu.tw:8009')
+    s3_host = os.getenv("S3_HOST")
 
     config = Config(signature_version='s3',
                     s3={'addressing_style': 'path'})

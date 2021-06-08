@@ -9,32 +9,6 @@ steps:
     when:
       event: pull_request
 
-  - name: unit-test
-    image: python:3.7.4
-    commands:
-      - export PYTHONPATH=$CI_WORKSPACE
-      - pip install --upgrade pip
-      - pip install --retries 10 --timeout 120 -r requirements.txt
-      - coverage run --source app -m pytest -v test -p no:warnings
-      - coverage report
-      - coverage xml
-    when:
-      event: [pull_request, push]
-      branch: master
-
-  - name: sonar-scanner
-    image: newtmitch/sonar-scanner
-    environment:
-      SONAR_HOST:
-        from_secret: sonar_host
-      SONAR_TOKEN:
-        from_secret: sonar_token
-    commands:
-      - sonar-scanner -Dsonar.host.url=$$SONAR_HOST -Dsonar.login=$$SONAR_TOKEN -Dsonar.analysis.pullRequest=${DRONE_PULL_REQUEST} -Dsonar.analysis.gitRepo=${DRONE_REPO}
-    when:
-      event: push
-      branch: master
-
   - name: build-docker-image-beta
     image: plugins/docker
     settings:
@@ -52,7 +26,7 @@ steps:
       event: push
       branch: master
 
-  - name: deploy-vks-manifesto-beta
+  - name: deploy-k8s-manifesto-beta
     image: harbor.linecorp.com/line-hub/drone-update-kustomization:latest
     settings:
       repo_url: ssh://git@git-dev.linecorp.com:20022/LINE-HUB/deployment-manifests.git
@@ -94,7 +68,7 @@ steps:
       ref:
         - refs/tags/v*
 
-  - name: deploy-vks-manifesto-rc
+  - name: deploy-k8s-manifesto-rc
     image: harbor.linecorp.com/line-hub/drone-update-kustomization:latest
     settings:
       repo_url: ssh://git@git-dev.linecorp.com:20022/LINE-HUB/deployment-manifests.git
@@ -109,7 +83,7 @@ steps:
       ref:
         - refs/tags/v*
 
-  - name: deploy-vks-manifesto-production
+  - name: deploy-k8s-manifesto-production
     image: harbor.linecorp.com/line-hub/drone-update-kustomization:latest
     settings:
       repo_url: ssh://git@git-dev.linecorp.com:20022/LINE-HUB/deployment-manifests.git

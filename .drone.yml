@@ -1,3 +1,7 @@
+################
+# Msg Storage  #
+################
+
 kind: pipeline
 type: docker
 name: account
@@ -51,10 +55,15 @@ steps:
 trigger:
   branch:
   - main
+
 ---
+################
+# File Storage #
+################
+
 kind: pipeline
 type: docker
-name: web
+name: object
 
 platform:
   os: linux
@@ -75,23 +84,24 @@ x-build-docker-image: &x-build-docker-image
       from_secret: docker_password
 
 steps:
-- name: client-push-registry
-  <<: *x-build-docker-image
-  settings:
-    repo: minghsu0107/sendify-web-client
-    dockerfile: ./web-client/dockerfile
-    context: ./web-client
-  depends_on:
-    - clone
-  when:
-    event: push
-- name: server-push-registry
-  <<: *x-build-docker-image
-  settings:
-    repo: minghsu0107/sendify-web-server
-    dockerfile: ./web-server/dockerfile
-    context: ./web-server
-  depends_on:
-    - clone
-  when:
-    event: push
+  - name: pycodestyle
+    image: shyper/pycodestyle
+    commands:
+      - pycodestyle **/*.py
+    when:
+      event: pull_request
+
+  - name: object-push-registry
+    <<: *x-build-docker-image
+    settings:
+      repo: minghsu0107/sendify-object
+      dockerfile: ./object/Dockerfile
+      context: ./object
+    depends_on:
+      - clone
+    when:
+      event: push
+      
+trigger:
+  branch:
+  - main

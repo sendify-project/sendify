@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import SidebarItem from 'components/sidebar-item'
 import ChatItem from 'components/chat-item'
+import 'index.css'
 
 function ChatPage({ logout }) {
   const [currentChannel, setCurrentChannel] = useState({
     name: 'ntuim',
     members: [{ name: 'Katherine' }, { name: 'Wendy' }, { name: 'Ming' }, { name: 'Sam' }],
     message: [], // TODO {text, time, sender}
-    channals: [], // TODO 
+    channals: [], // TODO
   })
 
   const handleClick = (e) => {
@@ -23,12 +24,9 @@ function ChatPage({ logout }) {
             <div class='d-flex justify-content-between'>
               <div class='logo'>
                 <Link to='/'>
-                  <img src='assets/images/logo/logo.png' alt='Logo' />
+                  <img src='assets/images/logo/logo.png' alt='Logo' width='100' height='100' />
                 </Link>
               </div>
-              <button className='btn btn-blue' onClick={logout}>
-                Logout
-              </button>
               <div class='toggler d-sm-none'>
                 <a href='#' class='sidebar-hide d-xl-none d-block'>
                   <i class='bi bi-x bi-middle'></i>
@@ -53,6 +51,9 @@ function ChatPage({ logout }) {
               <SidebarItem text='wendy' />
             </ul>
           </div>
+          <button className='btn btn-blue' onClick={logout}>
+            Logout
+          </button>
           <button class='sidebar-toggler btn x'>
             <i data-feather='x'></i>
           </button>
@@ -94,7 +95,9 @@ function ChatPage({ logout }) {
                     <div class='chat-content'>
                       {/* TODO */}
                       <ChatItem text='Hi Alfy, how can i help you?' time='1:05 PM' sender='me' />
-                      <ChatItem text='幹你娘?' time='1:05 PM' sender='A' />
+                      <ChatItem text='I am fine?' time='1:05 PM' sender='A' />
+                      <ChatItem text='Oh' time='1:05 PM' sender='me' />
+                      <ChatItem text='Ha Ha' time='1:05 PM' sender='A' />
                     </div>
                   </div>
                   <div class='card-footer'>

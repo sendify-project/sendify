@@ -1,5 +1,6 @@
 function ChatItem({ text, time, sender }) {
-  if (sender != "me") // TODO
+  if (sender != 'me')
+    // TODO
     return (
       <div class='chat chat-left'>
         <div class='chat-body'>
@@ -10,7 +11,7 @@ function ChatItem({ text, time, sender }) {
             </div>
             {text}
             <br />
-            <span style={{ fontSize: 'xx-smal' }}>{time}</span>
+            <span style={{ fontSize: 'xx-small' }}>{time}</span>
           </div>
         </div>
       </div>
@@ -22,7 +23,7 @@ function ChatItem({ text, time, sender }) {
           <div class='chat-message'>
             {text}
             <br />
-            <span style={{ fontSize: 'xx-smal' }}>{time}</span>
+            <span style={{ fontSize: 'xx-small' }}>{time}</span>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
-const redisAdapter = require('socket.io-redis')
+const redisAdapter = require('@socket.io/redis-adapter')
 const redis = require('./utils/redis')
 const { generateMessage, generateLocationMessage } = require('./utils/messages')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
@@ -16,12 +16,7 @@ const io = socketio(server, {
   },
 })
 
-io.adapter(
-  redisAdapter({
-    pubClient: redis.pub,
-    subClient: redis.sub,
-  })
-)
+io.adapter(redisAdapter(redis.pub, redis.sub))
 
 const nsp = io.of('/sendify')
 const port = process.env.PORT || 3000

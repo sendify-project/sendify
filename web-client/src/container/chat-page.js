@@ -52,6 +52,7 @@ function ChatPage({ user, logout }) {
       console.log({ room: currentChannel.name })
       socket.emit('join', { room: currentChannel.name }, (error) => {
         if (error) {
+          console.log(error)
           alert(error)
         }
       })

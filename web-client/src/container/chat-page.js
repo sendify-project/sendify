@@ -1,19 +1,75 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import socketIOClient from 'socket.io-client'
 import SidebarItem from 'components/sidebar-item'
 import ChatItem from 'components/chat-item'
 import 'index.css'
 
-function ChatPage({ logout }) {
+function ChatPage({ user, logout }) {
+  const [message, setMessage] = useState([])
+  const [newMsg, setNewMsg] = useState('')
   const [currentChannel, setCurrentChannel] = useState({
-    name: 'ntuim',
-    members: [{ name: 'Katherine' }, { name: 'Wendy' }, { name: 'Ming' }, { name: 'Sam' }],
-    message: [], // TODO {text, time, sender}
-    channals: [], // TODO
+    name: '',
+    members: [],
+    // message: [], // TODO {text, time, sender}
+    // channals: [], // TODO
   })
+  const [socket, setSocket] = useState(
+    socketIOClient('/sendify', {
+      extraHeaders: {
+        Authorization: `bearer ${user.accessToken}`,
+        'X-User-Id': 0,
+        'X-Sendify-Username': user.firstname || 'Unknown',
+      },
+      autoConnect: false,
+    })
+  )
 
-  const handleClick = (e) => {
-    console.log(e)
+  useEffect(() => {
+    socket.open()
+    socket.on('message', (data) => {
+      console.log({ message: data })
+      setMessage((prev) => [...prev, data])
+    })
+    socket.on('roomData', (data) => {
+      console.log({ roomData: data })
+      setCurrentChannel({
+        name: data.room,
+        members: data.users,
+      })
+    })
+    // for test
+    setCurrentChannel({
+      name: 'ntuim',
+      members: [],
+    })
+
+    return () => socket.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (currentChannel.name !== '') {
+      console.log({ room: currentChannel.name })
+      socket.emit('join', { room: currentChannel.name }, (error) => {
+        if (error) {
+          alert(error)
+        }
+      })
+      setMessage([])
+    }
+  }, [user.name, currentChannel.name])
+
+  const handleInputKeyDown = (e) => {
+    if (e.target.value !== '' && e.key === 'Enter') {
+      const username = user.name === '' ? 'Unknown' : user.name
+      console.log({ username, room: currentChannel.name, message: e.target.value })
+      socket.emit('sendMessage', { message: e.target.value, room: currentChannel.name }, (error) => {
+        if (error) {
+          alert(error)
+        }
+      })
+      setNewMsg('')
+    }
   }
 
   return (
@@ -46,9 +102,9 @@ function ChatPage({ logout }) {
 
               <li class='sidebar-title'>All Channels</li>
               {/* TODO */}
-              <SidebarItem text='ntuim' />
-              <SidebarItem text='family' />
-              <SidebarItem text='wendy' />
+              <SidebarItem text='ntuim' onClick={() => setCurrentChannel({ members: [], name: 'ntuim' })} />
+              <SidebarItem text='family' onClick={() => setCurrentChannel({ members: [], name: 'family' })} />
+              <SidebarItem text='wendy' onClick={() => setCurrentChannel({ members: [], name: 'wendy' })} />
             </ul>
           </div>
           <button className='btn btn-blue' onClick={logout}>
@@ -80,9 +136,9 @@ function ChatPage({ logout }) {
                         <h6 class='mb-0'># {currentChannel.name}</h6>
                         <span class='text-xs'>
                           {currentChannel.members.map((e, idx) => {
-                            if (idx === currentChannel.members.length - 1) return e.name
-                            else if (idx === currentChannel.members.length - 2) return e.name + ', and '
-                            else return e.name + ', '
+                            if (idx === currentChannel.members.length - 1) return e.username
+                            else if (idx === currentChannel.members.length - 2) return e.username + ', and '
+                            else return e.username + ', '
                           })}
                         </span>
                       </div>
@@ -93,16 +149,21 @@ function ChatPage({ logout }) {
                   </div>
                   <div class='card-body pt-4 bg-grey' style={{ overflow: 'auto' }}>
                     <div class='chat-content'>
-                      {/* TODO */}
-                      <ChatItem text='Hi Alfy, how can i help you?' time='1:05 PM' sender='me' />
-                      <ChatItem text='I am fine?' time='1:05 PM' sender='A' />
-                      <ChatItem text='Oh' time='1:05 PM' sender='me' />
-                      <ChatItem text='Ha Ha' time='1:05 PM' sender='A' />
+                      {message.map((el) => (
+                        <ChatItem text={el.text} time={Date(el.createdAt)} sender={el.username} />
+                      ))}
                     </div>
                   </div>
                   <div class='card-footer'>
                     <div class='d-flex flex-grow-1 ml-4'>
-                      <input type='text' class='form-control' placeholder='Type your message..' />
+                      <input
+                        type='text'
+                        class='form-control'
+                        placeholder='Type your message..'
+                        value={newMsg}
+                        onKeyDown={handleInputKeyDown}
+                        onChange={(e) => setNewMsg(e.target.value)}
+                      />
                       <input id='file' type='file' onchange='upload(this)' style={{ display: 'none' }} />
                       <button class='btn btn-outline-secondary' type='button' id='button' onclick='file.click()'>
                         <i class='bi bi-paperclip'></i>

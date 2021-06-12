@@ -17,5 +17,3 @@ echo "yes" | redis-cli --cluster create \
 	127.0.0.1:6384 \
 	127.0.0.1:6385 \
 	--cluster-replicas 1
-
-npm start

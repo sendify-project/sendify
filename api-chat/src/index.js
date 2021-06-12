@@ -63,7 +63,7 @@ nsp.on('connection', (socket) => {
       return callback('Profanity is not allowed!')
     }
 
-    console.log(`A user send message: ${message} from room ${room}`)
+    console.log(`A user "${username}" send message: "${message}" from room ${room}`)
     nsp.to(room).emit('message', generateMessage(username, message))
     callback()
   })

@@ -61,7 +61,7 @@ function ChatPage({ user, logout }) {
 
   const handleInputKeyDown = (e) => {
     if (e.target.value !== '' && e.key === 'Enter') {
-      const username = user.name === '' ? 'Unknown' : user.name
+      const username = user.firstname === '' ? 'Unknown' : user.firstname
       console.log({ username, room: currentChannel.name, message: e.target.value })
       socket.emit('sendMessage', { message: e.target.value, room: currentChannel.name }, (error) => {
         if (error) {
@@ -150,7 +150,12 @@ function ChatPage({ user, logout }) {
                   <div class='card-body pt-4 bg-grey' style={{ overflow: 'auto' }}>
                     <div class='chat-content'>
                       {message.map((el) => (
-                        <ChatItem text={el.text} time={Date(el.createdAt)} sender={el.username} />
+                        <ChatItem
+                          text={el.text}
+                          time={Date(el.createdAt)}
+                          sender={el.username}
+                          left={el.uesrname !== user.firstname}
+                        />
                       ))}
                     </div>
                   </div>

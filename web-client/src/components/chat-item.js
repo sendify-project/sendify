@@ -1,5 +1,5 @@
-function ChatItem({ text, time, sender }) {
-  if (sender != 'me')
+function ChatItem({ text, time, sender, left }) {
+  if (sender !== 'me' || left)
     // TODO
     return (
       <div class='chat chat-left'>

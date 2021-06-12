@@ -16,6 +16,14 @@ function ChatPage({ logout }) {
     console.log(e)
   }
 
+  function upload(e) {
+    var file = e.files[0]
+    if (!file) {
+      return
+    }
+    e.value = ''
+  }
+
   return (
     <div id='app'>
       <div id='sidebar' class='active'>
@@ -34,6 +42,7 @@ function ChatPage({ logout }) {
               </div>
             </div>
           </div>
+
           <div class='sidebar-menu'>
             <ul class='menu'>
               {/* <li class='sidebar-title'>Pinned Channels</li>
@@ -51,12 +60,14 @@ function ChatPage({ logout }) {
               <SidebarItem text='wendy' />
             </ul>
           </div>
-          <button className='btn btn-blue' onClick={logout}>
-            Logout
-          </button>
           <button class='sidebar-toggler btn x'>
             <i data-feather='x'></i>
           </button>
+          <Link to='/'>
+            <button class='btn btn-blue' onClick={logout}>
+              Logout
+            </button>
+          </Link>
         </div>
       </div>
       <div id='main'>

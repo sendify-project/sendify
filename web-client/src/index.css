@@ -399,6 +399,14 @@ a:active {
 .btn.btn-dark {
   color: #fff;
 }
+.btn.btn-blue {
+  padding: 1rem;
+  margin: 1.5rem;
+  font-size: 1rem;
+  list-style: none;
+  font-weight: 600;
+  color: #25396f;
+}
 .btn-block {
   width: 100%;
 }

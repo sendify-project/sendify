@@ -120,7 +120,13 @@ func (r *Router) Auth(c *gin.Context) {
 		response(c, http.StatusUnauthorized, presenter.ErrUnautorized)
 		return
 	}
+	info, err := r.customerSvc.GetCustomerPersonalInfo(c.Request.Context(), customerID)
+	if err != nil {
+		response(c, http.StatusInternalServerError, presenter.ErrServer)
+		return
+	}
 	c.Writer.Header().Set("X-User-Id", strconv.FormatUint(customerID, 10))
+	c.Writer.Header().Set("X-Username", info.FirstName)
 	c.Status(http.StatusOK)
 }
 

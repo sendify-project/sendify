@@ -36,8 +36,13 @@ nsp.on('connection', (socket) => {
       username,
       room: options.room,
     }
+
     try {
-      addUser(user)
+      const { originRoom } = addUser(user)
+      if (originRoom) {
+        console.log(`${username} leave room ${originRoom}`)
+        socket.leave(originRoom)
+      }
     } catch (err) {
       return callback(err)
     }

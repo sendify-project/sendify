@@ -28,6 +28,8 @@ function LoginPage({ setUser, getUserInfo, logout }) {
             return history.push('/login')
           }
           localStorage.setItem('access_token', accessToken)
+          localStorage.setItem('firstname', user.firstname)
+          localStorage.setItem('lastname', user.lastname)
           setUser((prev) => ({ ...prev, ...user, accessToken: accessToken, isLogin: true }))
           history.push('/chat')
         } else {

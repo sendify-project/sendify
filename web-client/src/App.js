@@ -16,27 +16,27 @@ function App() {
   })
   const history = useHistory()
 
-  useEffect(() => {
-    if (user.accessToken !== '' && user.firstname === '' && user.lastname === '') {
-      const fetchData = async (accessToken) => {
-        try {
-          const user = await getUserInfo(accessToken)
-          if (!user.firstname || !user.lastname) {
-            alert('get uesr info error')
-            return history.push('/login')
-          } else {
-            setUser((prev) => ({ ...prev, ...user }))
-          }
-        } catch (err) {
-          console.log(err)
-          logout()
-          alert('get uesr info error')
-          return history.push('/login')
-        }
-      }
-      fetchData(user.accessToken)
-    }
-  }, [user.accessToken])
+  // useEffect(() => {
+  //   if (user.accessToken !== '' && user.firstname === '' && user.lastname === '') {
+  //     const fetchData = async (accessToken) => {
+  //       try {
+  //         const user = await getUserInfo(accessToken)
+  //         if (!user.firstname || !user.lastname) {
+  //           alert('get uesr info error')
+  //           return history.push('/login')
+  //         } else {
+  //           setUser((prev) => ({ ...prev, ...user }))
+  //         }
+  //       } catch (err) {
+  //         console.log(err)
+  //         logout()
+  //         alert('get uesr info error')
+  //         return history.push('/login')
+  //       }
+  //     }
+  //     fetchData(user.accessToken)
+  //   }
+  // }, [user.accessToken])
 
   const logout = () => {
     setUser({ name: '', accessToken: '', firstname: '', lastname: '', phone: '', isLogin: false })
@@ -68,8 +68,10 @@ function CheckLocalStorage({ user, setUser }) {
 
   useEffect(() => {
     const accessToken = localStorage.getItem('access_token')
+    const firstname = localStorage.getItem('firstname')
+    const lastname = localStorage.getItem('lastname')
     if (accessToken && accessToken !== '' && accessToken !== user.accessToken) {
-      setUser((prev) => ({ ...prev, accessToken, isLogin: true }))
+      setUser((prev) => ({ ...prev, accessToken, firstname, lastname, isLogin: true }))
       history.push('/chat')
     }
   }, [])

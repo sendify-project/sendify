@@ -154,7 +154,7 @@ function ChatPage({ user, logout }) {
                           text={el.text}
                           time={Date(el.createdAt)}
                           sender={el.username}
-                          left={el.uesrname !== user.firstname}
+                          left={el.username !== user.firstname}
                         />
                       ))}
                     </div>

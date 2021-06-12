@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect, useHistory } from 're
 import LoginPage from 'container/login-page.js'
 import SignupPage from 'container/signup-page.js'
 import ChatPage from 'container/chat-page.js'
+import axios from 'axios'
 
 function App() {
   const [user, setUser] = useState({
@@ -14,6 +15,28 @@ function App() {
     isLogin: false,
   })
   const history = useHistory()
+
+  useEffect(() => {
+    if (user.accessToken !== '' && user.firstname === '' && user.lastname === '') {
+      const fetchData = async (accessToken) => {
+        try {
+          const user = await getUserInfo(accessToken)
+          if (!user.firstname || !user.lastname) {
+            alert('get uesr info error')
+            return history.push('/login')
+          } else {
+            setUser((prev) => ({ ...prev, ...user }))
+          }
+        } catch (err) {
+          console.log(err)
+          logout()
+          alert('get uesr info error')
+          return history.push('/login')
+        }
+      }
+      fetchData(user.accessToken)
+    }
+  }, [user.accessToken])
 
   const logout = () => {
     setUser({ name: '', accessToken: '', firstname: '', lastname: '', phone: '', isLogin: false })
@@ -29,12 +52,12 @@ function App() {
           {user.isLogin ? <Redirect to='/chat' /> : <Redirect to='/login' />}
         </Route>
         <Route path='/login'>
-          <LoginPage setUser={setUser} />
+          <LoginPage setUser={setUser} getUserInfo={getUserInfo} logout={logout} />
         </Route>
         <Route path='/signup'>
-          <SignupPage setUser={setUser} />
+          <SignupPage setUser={setUser} getUserInfo={getUserInfo} logout={logout} />
         </Route>
-        <Route path='/chat'>{user.isLogin ? <ChatPage logout={logout} /> : <Redirect to='/login' />}</Route>
+        <Route path='/chat'>{user.isLogin ? <ChatPage user={user} logout={logout} /> : <Redirect to='/login' />}</Route>
       </Switch>
     </Router>
   )
@@ -52,6 +75,16 @@ function CheckLocalStorage({ user, setUser }) {
   }, [])
 
   return <></>
+}
+
+function getUserInfo(accessToken) {
+  return axios.get('/api/account', { headers: { Authorization: `bearer ${accessToken}` } }).then((res) => {
+    if (!res.data.firstname || !res.data.lastname) {
+      throw new Error('get user info failed')
+    } else {
+      return res.data
+    }
+  })
 }
 
 export default App

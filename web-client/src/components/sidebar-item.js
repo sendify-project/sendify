@@ -1,10 +1,7 @@
-function SidebarItem({ text }) {
-  const click = (e) => {
-    console.log(e)
-  }
+function SidebarItem({ text, onClick }) {
   return (
     <li class='sidebar-item'>
-      <div class='sidebar-link' onClick={click}>
+      <div class='sidebar-link' onClick={onClick}>
         <span># {text}</span>
       </div>
     </li>

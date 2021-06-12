@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import axios from 'axios'
 
-function SignupPage({ setUser }) {
+function SignupPage({ setUser, getUserInfo, logout }) {
   const [email, setEmail] = useState('')
   const [passwd, setPasswd] = useState('')
   const [confirmPasswd, setConfirmPasswd] = useState('')
@@ -18,16 +18,27 @@ function SignupPage({ setUser }) {
     }
     axios
       .post('/api/signup', { email, password: passwd, firstname, lastname, address: 'taipei', phone_number: phone })
-      .then((res) => {
+      .then(async (res) => {
         if (res.data.access_token) {
-          console.log(res.data.access_token)
-          localStorage.setItem('access_token', res.data.access_token)
+          const accessToken = res.data.access_token
+          console.log(accessToken)
+          let user
+          try {
+            user = await getUserInfo(accessToken)
+            if (!user.firstname || !user.lastname) {
+              alert('login fail')
+              return history.push('/login')
+            }
+          } catch (err) {
+            console.log(err)
+            logout()
+            alert('login fail')
+            return history.push('/login')
+          }
+          localStorage.setItem('access_token', accessToken)
           setUser((prev) => ({
             ...prev,
-            email,
-            firstname,
-            lastname,
-            phone,
+            ...user,
             accessToken: res.data.access_token,
             isLogin: true,
           }))

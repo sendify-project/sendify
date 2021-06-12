@@ -120,8 +120,38 @@ func (r *Router) Auth(c *gin.Context) {
 		response(c, http.StatusUnauthorized, presenter.ErrUnautorized)
 		return
 	}
+	info, err := r.customerSvc.GetCustomerPersonalInfo(c.Request.Context(), customerID)
+	if err != nil {
+		response(c, http.StatusInternalServerError, presenter.ErrServer)
+		return
+	}
 	c.Writer.Header().Set("X-User-Id", strconv.FormatUint(customerID, 10))
+	c.Writer.Header().Set("X-Username", info.FirstName)
 	c.Status(http.StatusOK)
+}
+
+// GetCustomerPersonalInfo gets customer personal info
+func (r *Router) GetCustomerPersonalInfo(c *gin.Context) {
+	customerID, ok := c.Request.Context().Value(config.CustomerKey).(uint64)
+	if !ok {
+		response(c, http.StatusUnauthorized, presenter.ErrUnautorized)
+		return
+	}
+	personalInfo, err := r.customerSvc.GetCustomerPersonalInfo(c.Request.Context(), customerID)
+	switch err {
+	case repo.ErrCustomerNotFound:
+		response(c, http.StatusNotFound, repo.ErrCustomerNotFound)
+	case nil:
+		c.JSON(http.StatusOK, &presenter.CustomerPersonalInfo{
+			FirstName: personalInfo.FirstName,
+			LastName:  personalInfo.LastName,
+			Email:     personalInfo.Email,
+		})
+		return
+	default:
+		response(c, http.StatusInternalServerError, presenter.ErrServer)
+		return
+	}
 }
 
 func response(c *gin.Context, httpCode int, err error) {

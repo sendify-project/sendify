@@ -3,7 +3,7 @@ if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 const REDIS_ENDPOINT = process.env.REDIS_ENDPOINT
 
-if (!REDIS_ENDPOINT) throw new Error('env var is not found!')
+if (!REDIS_ENDPOINT) throw new Error('REDIS_ENDPOINT is not found!')
 
 const redis = {
   pub: new Redis.Cluster([

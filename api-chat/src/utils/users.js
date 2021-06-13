@@ -13,16 +13,15 @@ const addUser = ({ id, userId, username, room }) => {
   }
 
   // Check for existing user
-  const existingUser = users.find((user) => {
-    return user.room === room && user.username === username
-  })
+  const index = users.findIndex((user) => user.username === username)
 
   // Validate username
-  if (existingUser) {
-    return { user: { ...existingUser, room } }
-    // return {
-    //   error: 'Username is in use!',
-    // }
+  if (index > -1) {
+    const existingUser = users[index]
+    console.log({ existingUser })
+    const originRoom = users[index].room
+    existingUser.room = room
+    return { user: { ...existingUser }, originRoom }
   }
 
   // Store user

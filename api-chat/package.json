@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "NODE_ENV=production node src/index.js",
     "dev": "nodemon src/index.js",
     "prepare": "cd .. && husky install api-chat/.husky",
     "format": "prettier --write ./src"
@@ -12,11 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@socket.io/redis-adapter": "^7.0.0",
     "bad-words": "^3.0.3",
     "express": "^4.17.1",
     "ioredis": "^4.16.0",
-    "socket.io": "^4.1.2",
-    "socket.io-redis": "^6.1.1"
+    "socket.io": "^4.1.2"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",

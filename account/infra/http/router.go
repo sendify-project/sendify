@@ -19,6 +19,14 @@ type Router struct {
 	customerSvc account.CustomerService
 }
 
+// CustomerPersonalInfo request/response payload
+type CustomerPersonalInfo struct {
+	ID        uint64 `json:"id"`
+	FirstName string `json:"firstname" binding:"required"`
+	LastName  string `json:"lastname" binding:"required"`
+	Email     string `json:"email" binding:"required,email"`
+}
+
 // NewRouter is a factory for router instance
 func NewRouter(authSvc auth.JWTAuthService, customerSvc account.CustomerService) *Router {
 	return &Router{
@@ -142,7 +150,8 @@ func (r *Router) GetCustomerPersonalInfo(c *gin.Context) {
 	case repo.ErrCustomerNotFound:
 		response(c, http.StatusNotFound, repo.ErrCustomerNotFound)
 	case nil:
-		c.JSON(http.StatusOK, &presenter.CustomerPersonalInfo{
+		c.JSON(http.StatusOK, &CustomerPersonalInfo{
+			ID:        customerID,
 			FirstName: personalInfo.FirstName,
 			LastName:  personalInfo.LastName,
 			Email:     personalInfo.Email,

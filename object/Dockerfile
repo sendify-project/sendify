@@ -8,6 +8,4 @@ RUN pip install --retries 10 --timeout 120 --no-cache-dir -r requirements.txt
 
 COPY . /usr/src/app
 
-ENV APP_CONFIG_FILE ../config/development.py
-
-CMD APP_CONFIG_FILE=$APP_CONFIG_FILE gunicorn --access-logfile - -c gunicorn_config.py app:app
+CMD gunicorn --access-logfile - -c gunicorn_config.py app:app

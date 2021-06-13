@@ -1,12 +1,11 @@
 from flask import Blueprint, request, make_response, current_app
-import requests
-import io
 import os
 from botocore.client import Config
 import boto3
 import uuid
 import datetime
 import PIL.Image as Image
+import os
 
 upload = Blueprint('upload', __name__, url_prefix='/')
 
@@ -18,10 +17,10 @@ def files():
     user_id = request.headers.get('X-User-Id')
     channel_id = request.headers.get('X-Channel-Id')
 
-    access_key = current_app.config.get("ACCESS_KEY")
-    secret_key = current_app.config.get("SECRET_KEY")
-    expire_days = int(current_app.config.get("EXPIRE_DAYS", "10"))
-    s3_host = current_app.config.get("S3_HOST")
+    access_key = os.environ.get("ACCESS_KEY")
+    secret_key = os.environ.get("SECRET_KEY")
+    expire_days = int(os.environ.get("EXPIRE_DAYS", "10"))
+    s3_host = os.environ.get("S3_HOST")
     print(access_key, secret_key, expire_days, s3_host)
 
     config = Config(signature_version='s3',

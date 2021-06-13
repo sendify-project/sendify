@@ -4,6 +4,7 @@ import socketIOClient from 'socket.io-client'
 import SidebarItem from 'components/sidebar-item'
 import ChatItem from 'components/chat-item'
 import 'index.css'
+import axios from 'axios'
 
 function ChatPage({ user, logout }) {
   const [message, setMessage] = useState([])
@@ -68,6 +69,20 @@ function ChatPage({ user, logout }) {
         }
       })
       setNewMsg('')
+    }
+  }
+
+  const handleUpload = (e) => {
+    if (e.target.value !== '') {
+      axios
+        .post('/upload', { file: e.target.value }, { headers: { "X-User-Id": user.firstname, "X-Channel-Id": currentChannel.name } }) // TODO
+        .then(async (res) => {
+          alert(res)
+        })
+        .catch((err) => {
+          console.log(err)
+          alert('Something wrong occurs')
+        })
     }
   }
 
@@ -161,7 +176,7 @@ function ChatPage({ user, logout }) {
                     <div class='chat-content'>
                       {message.map((el) => (
                         <ChatItem
-                          text={el.text}
+                          text={el.text} // {filename if img,file}
                           type={el.type} // TODO {text,img,file}
                           s3_url={el.s3_url} // TODO text -> None
                           time={Date(el.createdAt)}
@@ -181,6 +196,7 @@ function ChatPage({ user, logout }) {
                         onKeyDown={handleInputKeyDown}
                         onChange={(e) => setNewMsg(e.target.value)}
                       />
+                      {/* onChange={(e) => handleUpload(e.target.value)} */}
                       <input id='file' type='file' onchange='upload(this)' style={{ display: 'none' }} />
                       <button class='btn btn-outline-secondary' type='button' id='button' onclick='file.click()'>
                         <i class='bi bi-paperclip'></i>

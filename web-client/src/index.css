@@ -286,7 +286,7 @@ a:active {
 .avatar .avatar-content i,
 .avatar .avatar-content svg {
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.8rem;
   height: 1rem;
 }
 .avatar img {
@@ -301,7 +301,7 @@ a:active {
   border-radius: 50%;
   border: 1px solid #fff;
   bottom: 0;
-  right: 0;
+  left: 0;
 }
 .avatar.avatar-sm .avatar-content,
 .avatar.avatar-sm img {

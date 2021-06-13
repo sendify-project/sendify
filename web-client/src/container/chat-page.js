@@ -11,8 +11,6 @@ function ChatPage({ user, logout }) {
   const [currentChannel, setCurrentChannel] = useState({
     name: '',
     members: [],
-    // message: [], // TODO {text, time, sender}
-    // channals: [], // TODO
   })
   const [socket, setSocket] = useState(
     socketIOClient('/sendify', {
@@ -164,6 +162,8 @@ function ChatPage({ user, logout }) {
                       {message.map((el) => (
                         <ChatItem
                           text={el.text}
+                          type={el.type} // TODO {text,img,file}
+                          s3_url={el.s3_url} // TODO text -> None
                           time={Date(el.createdAt)}
                           sender={el.username}
                           left={el.username !== user.firstname}

@@ -95,6 +95,24 @@ steps:
     - clone
   when:
     event: push
+- name: web-update-manifests
+  pull: if-not-exists
+  image: minghsu0107/update-kustomization:v1.0.3
+  environment:
+    SSH_KEY:
+      from_secret: ssh_key
+    IMAGES: minghsu0107/sendify-web-client,minghsu0107/sendify-web-server
+    IMAGE_TAG: ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}
+    MANIFEST_HOST: github.com
+    MANIFEST_USER: minghsu0107
+    MANIFEST_REPO: sendify-manifests
+    MANIFEST_BRANCH: ${DRONE_COMMIT_BRANCH}
+    KUSTOMIZATION: staging/web
+  depends_on:
+    - client-push-registry
+    - server-push-registry
+  when:
+    event: push
 
 ---
 kind: pipeline
@@ -128,5 +146,22 @@ steps:
     context: ./api-chat
   depends_on:
     - clone
+  when:
+    event: push
+- name: update-manifests
+  pull: if-not-exists
+  image: minghsu0107/update-kustomization:v1.0.3
+  environment:
+    SSH_KEY:
+      from_secret: ssh_key
+    IMAGES: minghsu0107/sendify-api-chat
+    IMAGE_TAG: ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}
+    MANIFEST_HOST: github.com
+    MANIFEST_USER: minghsu0107
+    MANIFEST_REPO: sendify-manifests
+    MANIFEST_BRANCH: ${DRONE_COMMIT_BRANCH}
+    KUSTOMIZATION: staging/api-chat
+  depends_on:
+    - push-registry
   when:
     event: push

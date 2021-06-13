@@ -63,7 +63,7 @@ function ChatPage({ user, logout }) {
     }
   }, [user.name, currentChannel.name])
 
-  const handleInputKeyDown = (e) => {
+  const handleInputKeyPress = (e) => {
     if (e.target.value !== '' && e.key === 'Enter') {
       const username = user.firstname
       console.log({ username, room: currentChannel.name, message: e.target.value })
@@ -182,7 +182,7 @@ function ChatPage({ user, logout }) {
                         class='form-control'
                         placeholder='Type your message..'
                         value={newMsg}
-                        onKeyDown={handleInputKeyDown}
+                        onKeyPress={handleInputKeyPress}
                         onChange={(e) => setNewMsg(e.target.value)}
                       />
                       <input id='file' type='file' onchange='upload(this)' style={{ display: 'none' }} />

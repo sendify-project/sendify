@@ -72,7 +72,7 @@ nsp.on('connection', (socket) => {
     }
 
     console.log(`A user "${username}" send message: "${message}" from room ${room}`)
-    nsp.to(room).emit('message', generateMessage(username, message))
+    nsp.to(room).emit('message', generateMessage(userId, username, message))
     callback()
   })
 

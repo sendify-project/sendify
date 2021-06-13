@@ -16,7 +16,7 @@ function ChatPage({ user, logout }) {
     socketIOClient('/sendify', {
       extraHeaders: {
         Authorization: `bearer ${user.accessToken}`,
-        'X-User-Id': 0,
+        'X-User-Id': user.userId,
         'X-Sendify-Username': user.firstname || 'Unknown',
       },
       autoConnect: false,
@@ -69,7 +69,8 @@ function ChatPage({ user, logout }) {
       console.log({ username, room: currentChannel.name, message: e.target.value })
       socket.emit('sendMessage', { message: e.target.value, room: currentChannel.name }, (error) => {
         if (error) {
-          alert(error)
+          console.log(error)
+          alert('fail to send message')
         }
       })
       setNewMsg('')
@@ -169,7 +170,7 @@ function ChatPage({ user, logout }) {
                           text={el.text}
                           time={el.createdAt}
                           sender={el.username}
-                          left={el.username !== user.firstname}
+                          left={el.userId !== user.userId}
                         />
                       ))}
                     </div>

@@ -13,9 +13,8 @@ const addUser = ({ id, userId, username, room }) => {
   }
 
   // Check for existing user
-  const index = users.findIndex((user) => user.username === username)
+  const index = users.findIndex((user) => user.userId === userId)
 
-  // Validate username
   if (index > -1) {
     const existingUser = users[index]
     console.log({ existingUser })
@@ -25,7 +24,7 @@ const addUser = ({ id, userId, username, room }) => {
   }
 
   // Store user
-  const user = { id, username, room }
+  const user = { id, userId, username, room }
   users.push(user)
   return { user }
 }

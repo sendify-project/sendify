@@ -1,0 +1,103 @@
+swagger: "2.0"
+info:
+  description: "This is a LINE TV searching server."
+  version: "1.0.0"
+  title: "Swagger LINE TV Search"
+tags:
+  - name: "search"
+    description: "Search LINE TV Data"
+schemes:
+- "http"
+paths:
+  /search:
+    get:
+      tags:
+      - "search"
+      summary: "search with query"
+      description: "search for the dramas in LINE TV"
+      operationId: "searchKeywords"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "keyword"
+        in: "query"
+        description: "The user's searching words, separated by space"
+        required: true
+        type: "string"
+      - name: "order_by"
+        in: "query"
+        description: "The order of receiving mutliple results, either by time or by relevance"
+        required: true
+        type: "string"
+      - name: "sort_by"
+        in: "query"
+        description: "The sorting order of receiving mutliple results, either in asc (ascending) or des (descending) order"
+        required: false
+        type: "string"
+      - name: "length"
+        in: "query"
+        description: "The maximum length of the receiving results"
+        required: true
+        type: "integer"
+      - name: "offset"
+        in: "query"
+        description: "The starting index of the receiving results (default 1)"
+        required: false
+        type: "integer"
+      - name: "fuzzy"
+        in: "query"
+        description: "If true, fuzzy results will be included"
+        required: false
+        type: "boolean"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: '#/definitions/DramaCollection'
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+definitions:
+  Drama:
+    type: "object"
+    properties:
+      drama_id:
+        type: integer
+      name:
+        type: string
+      total_eps:
+        type: integer
+      vertical_poster:
+        type: string
+      poster_url:
+        type: string
+      area_id:
+        type: integer
+      area_name:
+        type: string
+      actor_names:
+        type: array
+        items:
+          type: string
+      created_at:
+        type: string
+  DramaCollection:
+    type: "object"
+    properties:
+      total:
+        type: integer
+      drama_list:
+        type: "array"
+        items:
+          $ref: "#/definitions/Drama"
+  ErrorResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        example: "this is your error message."
+      code:
+        type: "integer"
+        format: "int64"
+        description: "predefined error code."

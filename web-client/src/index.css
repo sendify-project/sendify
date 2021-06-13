@@ -5389,6 +5389,7 @@ fieldset:disabled .btn {
   border-top: 0;
 }
 .card-body {
+  height: 520px;
   flex: 1 1 auto;
   padding: 1rem;
 }

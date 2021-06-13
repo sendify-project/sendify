@@ -1,18 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import socketIOClient from 'socket.io-client'
 import SidebarItem from 'components/sidebar-item'
 import ChatItem from 'components/chat-item'
-import 'index.css'
 
 function ChatPage({ user, logout }) {
+  const chatContentDom = useRef(null)
   const [message, setMessage] = useState([])
   const [newMsg, setNewMsg] = useState('')
   const [currentChannel, setCurrentChannel] = useState({
     name: '',
     members: [],
-    // message: [], // TODO {text, time, sender}
-    // channals: [], // TODO
   })
   const [socket, setSocket] = useState(
     socketIOClient('/sendify', {
@@ -30,6 +28,11 @@ function ChatPage({ user, logout }) {
     socket.on('message', (data) => {
       console.log({ message: data })
       setMessage((prev) => [...prev, data])
+      chatContentDom.current.scrollTo({
+        top: chatContentDom.current.scrollHeight,
+        left: 0,
+        behavior: 'smooth',
+      })
     })
     socket.on('roomData', (data) => {
       console.log({ roomData: data })
@@ -62,7 +65,7 @@ function ChatPage({ user, logout }) {
 
   const handleInputKeyDown = (e) => {
     if (e.target.value !== '' && e.key === 'Enter') {
-      const username = user.firstname === '' ? 'Unknown' : user.firstname
+      const username = user.firstname
       console.log({ username, room: currentChannel.name, message: e.target.value })
       socket.emit('sendMessage', { message: e.target.value, room: currentChannel.name }, (error) => {
         if (error) {
@@ -159,12 +162,12 @@ function ChatPage({ user, logout }) {
                       </button>
                     </div>
                   </div>
-                  <div class='card-body pt-4 bg-grey' style={{ overflow: 'auto' }}>
+                  <div class='card-body pt-4 bg-grey' style={{ overflow: 'auto' }} ref={chatContentDom}>
                     <div class='chat-content'>
                       {message.map((el) => (
                         <ChatItem
                           text={el.text}
-                          time={Date(el.createdAt)}
+                          time={el.createdAt}
                           sender={el.username}
                           left={el.username !== user.firstname}
                         />

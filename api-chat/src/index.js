@@ -3,23 +3,22 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
-const redisAdapter = require('socket.io-redis')
+const redisAdapter = require('@socket.io/redis-adapter')
 const redis = require('./utils/redis')
 const { generateMessage, generateLocationMessage } = require('./utils/messages')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
 
 const app = express()
 const server = http.createServer(app)
-const io = socketio(server)
+const io = socketio(server, {
+  cors: {
+    origin: '*',
+  },
+})
 
-io.adapter(
-  redisAdapter({
-    pubClient: redis.pub,
-    subClient: redis.sub,
-  })
-)
+io.adapter(redisAdapter(redis.pub, redis.sub))
 
-const nsp = io.of('/my-namespace')
+const nsp = io.of('/sendify')
 const port = process.env.PORT || 3000
 const publicDirectoryPath = path.join(__dirname, '../public')
 
@@ -27,15 +26,32 @@ app.use(express.static(publicDirectoryPath))
 
 nsp.on('connection', (socket) => {
   console.log('New WebSocket connection')
+  const userId = socket.request.headers['x-user-id']
+  const username = socket.request.headers['x-sendify-username']
 
   socket.on('join', (options, callback) => {
-    const { error, user } = addUser({ id: socket.id, ...options })
+    const user = {
+      id: socket.id,
+      userId,
+      username,
+      room: options.room,
+    }
+    console.log({ user })
 
-    if (error) {
-      return callback(error)
+    try {
+      const { originRoom } = addUser(user)
+      console.log({ originRoom })
+      if (originRoom) {
+        console.log(`${username} leave room ${originRoom}`)
+        socket.leave(originRoom)
+      }
+    } catch (err) {
+      console.log(err)
+      return callback(err)
     }
 
     socket.join(user.room)
+    console.log('A new user joined' + JSON.stringify(user))
 
     socket.emit('message', generateMessage('Admin', 'Welcome!'))
     socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined!`))
@@ -47,15 +63,16 @@ nsp.on('connection', (socket) => {
     callback()
   })
 
-  socket.on('sendMessage', (message, callback) => {
-    const user = getUser(socket.id)
+  socket.on('sendMessage', ({ message, room }, callback) => {
+    // const user = getUser(socket.id)
     const filter = new Filter()
 
     if (filter.isProfane(message)) {
       return callback('Profanity is not allowed!')
     }
 
-    nsp.to(user.room).emit('message', generateMessage(user.username, message))
+    console.log(`A user "${username}" send message: "${message}" from room ${room}`)
+    nsp.to(room).emit('message', generateMessage(username, message))
     callback()
   })
 
@@ -71,6 +88,7 @@ nsp.on('connection', (socket) => {
   })
 
   socket.on('disconnect', () => {
+    console.log('A user disconnected')
     const user = removeUser(socket.id)
 
     if (user) {

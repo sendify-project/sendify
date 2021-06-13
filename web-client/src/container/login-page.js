@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import axios from 'axios'
 
-function LoginPage({ setUser }) {
+function LoginPage({ setUser, getUserInfo, logout }) {
   const [email, setEmail] = useState('')
   const [passwd, setPasswd] = useState('')
   const history = useHistory()
@@ -10,11 +10,27 @@ function LoginPage({ setUser }) {
   const handleClick = (e) => {
     axios
       .post('/api/login', { email, password: passwd })
-      .then((res) => {
-        if (res.data.access_token) {
-          console.log(res.data.access_token)
-          localStorage.setItem('access_token', res.data.access_token)
-          setUser((prev) => ({ ...prev, accessToken: res.data.access_token, isLogin: true }))
+      .then(async (res) => {
+        const accessToken = res.data.access_token
+        if (accessToken) {
+          console.log({ accessToken })
+          let user
+          try {
+            user = await getUserInfo(accessToken)
+            if (!user.firstname || !user.lastname) {
+              alert('get uesr info error')
+              return history.push('/login')
+            }
+          } catch (err) {
+            console.log(err)
+            logout()
+            alert('get uesr info error')
+            return history.push('/login')
+          }
+          localStorage.setItem('access_token', accessToken)
+          localStorage.setItem('firstname', user.firstname)
+          localStorage.setItem('lastname', user.lastname)
+          setUser((prev) => ({ ...prev, ...user, accessToken: accessToken, isLogin: true }))
           history.push('/chat')
         } else {
           alert('Login fail')

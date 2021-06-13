@@ -1,0 +1,6 @@
+FROM node:15.14
+COPY . /app
+WORKDIR /app
+RUN yarn install --prod
+EXPOSE 3000
+ENTRYPOINT ["yarn", "start"]

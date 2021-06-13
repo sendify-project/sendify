@@ -72,6 +72,12 @@ func (s *Server) RegisterRoutes() {
 		{
 			withJWT.Any("", s.Router.Auth)
 		}
+
+		accountGroup := authGroup.Group("/account")
+		accountGroup.Use(s.jwtAuthChecker.JWTAuth())
+		{
+			accountGroup.GET("", s.Router.GetCustomerPersonalInfo)
+		}
 	}
 }
 

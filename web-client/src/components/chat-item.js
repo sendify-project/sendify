@@ -6,12 +6,13 @@ function ChatItem({ text, time, sender, left }) {
         <div class='chat-body'>
           <div class='chat-message'>
             <div class='avatar'>
-              <img src='assets/images/faces/1.jpg' alt='' />
               <span class='avatar-status bg-success'></span>
+              <img src='assets/images/faces/1.jpg' alt='' />
+              &nbsp; {sender}
             </div>
             {text}
             <br />
-            <span style={{ fontSize: 'xx-small' }}>{time}</span>
+            <span style={{ fontSize: 'xx-small' }}>{new Date(time).toLocaleTimeString()}</span>
           </div>
         </div>
       </div>
@@ -23,7 +24,7 @@ function ChatItem({ text, time, sender, left }) {
           <div class='chat-message'>
             {text}
             <br />
-            <span style={{ fontSize: 'xx-small' }}>{time}</span>
+            <span style={{ fontSize: 'xx-small' }}>{new Date(time).toLocaleTimeString()}</span>
           </div>
         </div>
       </div>

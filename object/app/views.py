@@ -53,9 +53,7 @@ def files():
         "s3_url": s3_host + "/sendify-object/" + fid,
         "orginal_filename": file.filename
     }
-    header = {"X-User-Id": user_id, "X-Channel-Id": channel_id}
-
-    # TODO
-    # resp = requests.post("", headers=header, data=data)
-    # return make_response(resp.json(), resp.status_code)
-    return make_response({"headers": header, "data": data}, 200)
+    resp = make_response(data, 200)
+    resp.headers["X-User-Id"] = user_id
+    resp.headers["X-Channel-Id"] = channel_id
+    return resp

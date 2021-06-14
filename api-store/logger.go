@@ -1,4 +1,4 @@
-package config
+package main
 
 import (
 	"io"
@@ -18,7 +18,6 @@ type Logger struct {
 }
 
 func newLogger(app string) *Logger {
-
 	writer := os.Stderr
 
 	contextLogger := log.WithFields(log.Fields{

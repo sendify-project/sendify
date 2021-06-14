@@ -170,6 +170,58 @@ steps:
 ---
 kind: pipeline
 type: docker
+name: api-store
+
+platform:
+  os: linux
+  arch: amd64
+
+x-build-docker-image: &x-build-docker-image
+  image: plugins/docker
+  settings:
+    custom_labels:
+    - 'BUILD_NUMBER=${DRONE_BUILD_NUMBER}'
+    - 'BUILD_SHA=${DRONE_COMMIT_SHA}'
+    tags:
+      - ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}
+      - latest
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+
+steps:
+- name: push-registry
+  <<: *x-build-docker-image
+  settings:
+    repo: minghsu0107/sendify-api-store
+    dockerfile: ./api-store/Dockerfile
+    context: ./api-store
+  depends_on:
+    - clone
+  when:
+    event: push
+- name: update-manifests
+  pull: if-not-exists
+  image: minghsu0107/update-kustomization:v1.0.3
+  environment:
+    SSH_KEY:
+      from_secret: ssh_key
+    IMAGES: minghsu0107/sendify-api-store
+    IMAGE_TAG: ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}
+    MANIFEST_HOST: github.com
+    MANIFEST_USER: minghsu0107
+    MANIFEST_REPO: sendify-manifests
+    MANIFEST_BRANCH: ${DRONE_COMMIT_BRANCH}
+    KUSTOMIZATION: staging/api-store
+  depends_on:
+    - push-registry
+  when:
+    event: push
+
+---
+kind: pipeline
+type: docker
 name: object
 
 platform:

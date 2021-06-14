@@ -27,7 +27,7 @@ app.use(express.static(publicDirectoryPath))
 nsp.on('connection', (socket) => {
   console.log('New WebSocket connection')
   console.log(socket.request.headers)
-  const userId = parseInt(socket.request.headers['x-user-id'])
+  const userId = socket.request.headers['x-user-id']
   const username = socket.request.headers['x-username']
 
   socket.on('join', (options, callback) => {

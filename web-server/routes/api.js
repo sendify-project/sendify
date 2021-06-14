@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const axios = require('axios')
+const JSONbig = require('json-bigint')
 
 if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
@@ -36,9 +37,14 @@ router.post('/signup', function (req, res, next) {
 router.get('/account', function (req, res, next) {
   console.log({ Authorization: req.get('Authorization') })
   axios
-    .get(`${ACCOUNT_API}/api/account`, { headers: { Authorization: req.get('Authorization') } })
+    .get(`${ACCOUNT_API}/api/account`, {
+      headers: { Authorization: req.get('Authorization') },
+      transformResponse: (res) => {
+        return JSONbig.parse(res)
+      },
+    })
     .then((result) => {
-      console.log(result.data)
+      if (result.data.id) result.data.id = result.data.id.toString()
       res.send(result.data)
     })
     .catch((err) => {

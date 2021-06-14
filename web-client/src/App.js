@@ -12,7 +12,7 @@ function App() {
     firstname: '',
     lastname: '',
     phone: '',
-    userId: undefined,
+    userId: '',
     isLogin: false,
   })
   const history = useHistory()
@@ -71,7 +71,7 @@ function CheckLocalStorage({ user, setUser }) {
     const accessToken = localStorage.getItem('access_token')
     const firstname = localStorage.getItem('firstname')
     const lastname = localStorage.getItem('lastname')
-    const userId = parseInt(localStorage.getItem('user_id'))
+    const userId = localStorage.getItem('user_id')
     if (accessToken && accessToken !== '' && accessToken !== user.accessToken) {
       setUser((prev) => ({ ...prev, accessToken, firstname, lastname, userId, isLogin: true }))
       history.push('/chat')
@@ -82,13 +82,19 @@ function CheckLocalStorage({ user, setUser }) {
 }
 
 function getUserInfo(accessToken) {
-  return axios.get('/api/account', { headers: { Authorization: `bearer ${accessToken}` } }).then((res) => {
-    if (!res.data.firstname || !res.data.lastname) {
-      throw new Error('get user info failed')
-    } else {
-      return res.data
-    }
-  })
+  return axios
+    .get('/api/account', {
+      headers: {
+        Authorization: `bearer ${accessToken}`,
+      },
+    })
+    .then((res) => {
+      if (!res.data.firstname || !res.data.lastname) {
+        throw new Error('get user info failed')
+      } else {
+        return res.data
+      }
+    })
 }
 
 export default App

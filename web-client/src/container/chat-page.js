@@ -10,7 +10,6 @@ function ChatPage({ user, logout }) {
   const chatContentDom = useRef(null)
   const [message, setMessage] = useState([])
   const [newMsg, setNewMsg] = useState('')
-  const [selectedFile, setSelectedFile] = useState('')
   const [currentChannel, setCurrentChannel] = useState({
     name: '',
     members: [],
@@ -82,21 +81,54 @@ function ChatPage({ user, logout }) {
 
   const handleUploadKeyDown = (file) => {
     if (file !== '') {
-      const data = new FormData();
-      data.append('file', file);
-      for (var key of data.entries()) {
-        console.log(key[0] + ', ' + key[1]);
-      }
+
+      // Get channel id
+      let cid = 0;
       axios
-        .post('/api/upload', data, { headers: { "X-User-Id": user.firstname, "X-Channel-Id": currentChannel.name, "Content-Type": "multipart/form-data" } }) // TODO
+        .get('/api/channels')
         .then(async (res) => {
           alert(res.status)
-          console.log(res) // TODO call sendMsg
+          console.log(res);
+          let c = res.data.channels;
+          for (let i = 0; i < c.channels.length; i++)
+            if (c[i]["name"] === currentChannel.name)
+              cid = c[i]["id"];
         })
         .catch((err) => {
           console.log(err)
-          alert('Something wrong occurs')
+          alert('Cannot get channel-id')
         })
+
+      cid = 10; // TODO for test
+      if (cid !== 0) {
+        const data = new FormData();
+        data.append('file', file);
+        // for (var key of data.entries()) {
+        //   console.log(key[0] + ', ' + key[1]);
+        // }
+        axios
+          .post('https://sendify-beta.csie.org/upload', data, { headers: { "Authorization": `bearer ${user.accessToken}`, "X-Channel-Id": currentChannel.id, "Content-Type": "multipart/form-data" } })
+          .then(async (res) => {
+            alert(res.status)
+            console.log(res)
+
+            // TODO call sendMsg
+            // text type s3_url filesize createdAt username
+            const username = user.firstname
+            const filesize = res.data.size // TODO
+            console.log({ message: { s3_url: res.data.s3_url, type: res.data.type, text: res.data.orginal_filename, filesize: filesize }, room: currentChannel.name })
+            socket.emit('sendMessage', { message: { s3_url: res.data.s3_url, type: res.data.type, text: res.data.orginal_filename, filesize: filesize }, room: currentChannel.name }, (error) => {
+              if (error) {
+                console.log(error)
+                alert('fail to send message')
+              }
+            })
+          })
+          .catch((err) => {
+            console.log(err)
+            alert('Something wrong occurs')
+          })
+      }
     }
   }
 
@@ -188,7 +220,7 @@ function ChatPage({ user, logout }) {
                           filesize={el.filesize} // TODO text,img -> None
                           time={Date(el.createdAt)}
                           sender={el.username}
-                          left={el.userId !== user.userId}
+                          left={parseInt(el.userId) !== parseInt(user.userId)}
                         />
                       ))}
                     </div>
@@ -203,14 +235,13 @@ function ChatPage({ user, logout }) {
                         onKeyPress={handleInputKeyPress}
                         onChange={(e) => setNewMsg(e.target.value)}
                       />
-                      <button class='btn btn-outline-secondary' id='button'>
+                      <label for='file-upload' class='custom-file-upload'>
                         <i class='bi bi-paperclip'></i>
-                      </button>
+                      </label>
                       <input
-                        id='file'
+                        id='file-upload'
                         type='file'
-                        // style={{ display: 'none' }}
-                        // onClick={(e) => e.target.value = ''} 
+                        // onClick={(e) => e.target.value = ''}
                         onChange={(e) => handleUploadKeyDown(e.target.files[0])}
                       />
                     </div>
@@ -229,7 +260,7 @@ function ChatPage({ user, logout }) {
           </footer>
         </div>
       </div>
-    </div >
+    </div>
   )
 }
 

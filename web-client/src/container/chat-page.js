@@ -185,6 +185,7 @@ function ChatPage({ user, logout }) {
                           text={el.text} // {filename if img,file}
                           type={el.type} // TODO {text,img,file}
                           s3_url={el.s3_url} // TODO text -> None
+                          filesize={el.filesize} // TODO text,img -> None
                           time={Date(el.createdAt)}
                           sender={el.username}
                           left={el.userId !== user.userId}

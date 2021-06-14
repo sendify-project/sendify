@@ -1,4 +1,4 @@
-function ChatItem({ text, type, s3_url, time, sender, left }) {
+function ChatItem({ text, type, s3_url, time, sender, left, filesize }) {
   console.log(text, type, s3_url, time, sender, left, filesize)
   if (left) {
     if (type === 'file') {

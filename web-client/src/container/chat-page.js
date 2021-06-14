@@ -99,6 +99,7 @@ function ChatPage({ user, logout }) {
           alert('Cannot get channel-id')
         })
 
+      cid = 10; // TODO for test
       if (cid !== 0) {
         const data = new FormData();
         data.append('file', file);
@@ -106,7 +107,7 @@ function ChatPage({ user, logout }) {
         //   console.log(key[0] + ', ' + key[1]);
         // }
         axios
-          .post('/api/upload', data, { headers: { "X-Channel-Id": currentChannel.id, "Content-Type": "multipart/form-data" } })
+          .post('https://sendify-beta.csie.org/upload', data, { headers: { "Authorization": `bearer ${user.accessToken}`, "X-Channel-Id": currentChannel.id, "Content-Type": "multipart/form-data" } })
           .then(async (res) => {
             alert(res.status)
             console.log(res) // TODO call sendMsg

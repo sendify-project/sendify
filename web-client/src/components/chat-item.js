@@ -7,7 +7,11 @@ function ChatItem({ text, type, s3_url, time, sender, left, filesize }) {
           <div class='chat-body'>
             <div class='chat-message'>
               <div class='avatar'>
-                <img src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`} alt='' />
+                <img
+                  src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`}
+                  alt=''
+                  style={{ 'background-color': 'white' }}
+                />
                 &nbsp; {sender}
               </div>
               <div class='row'>
@@ -37,7 +41,11 @@ function ChatItem({ text, type, s3_url, time, sender, left, filesize }) {
           <div class='chat-body'>
             <div class='chat-message'>
               <div class='avatar'>
-                <img src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`} alt='' />
+                <img
+                  src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`}
+                  alt=''
+                  style={{ 'background-color': 'white' }}
+                />
                 &nbsp; {sender}
               </div>
               <a type='button' data-bs-toggle='modal' data-bs-target='#photoPreview' style='border: 0px;'>
@@ -62,7 +70,11 @@ function ChatItem({ text, type, s3_url, time, sender, left, filesize }) {
           <div class='chat-body'>
             <div class='chat-message'>
               <div class='avatar'>
-                <img src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`} alt='' />
+                <img
+                  src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`}
+                  alt=''
+                  style={{ 'background-color': 'white' }}
+                />
                 &nbsp; {sender}
               </div>
               {text}
@@ -80,7 +92,11 @@ function ChatItem({ text, type, s3_url, time, sender, left, filesize }) {
           <div class='chat-body'>
             <div class='chat-message'>
               <div class='avatar'>
-                <img src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`} alt='' />
+                <img
+                  src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`}
+                  alt=''
+                  style={{ 'background-color': 'white' }}
+                />
                 &nbsp; {sender}
               </div>
               <div class='row'>
@@ -109,7 +125,11 @@ function ChatItem({ text, type, s3_url, time, sender, left, filesize }) {
           <div class='chat-body'>
             <div class='chat-message'>
               <div class='avatar'>
-                <img src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`} alt='' />
+                <img
+                  src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`}
+                  alt=''
+                  style={{ 'background-color': 'white' }}
+                />
                 &nbsp; {sender}
               </div>
               <a type='button' data-bs-toggle='modal' data-bs-target='#photoPreview' style='border: 0px;'>
@@ -134,7 +154,11 @@ function ChatItem({ text, type, s3_url, time, sender, left, filesize }) {
           <div class='chat-body'>
             <div class='chat-message'>
               <div class='avatar'>
-                <img src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`} alt='' />
+                <img
+                  src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`}
+                  alt=''
+                  style={{ 'background-color': 'white' }}
+                />
                 &nbsp; {sender}
               </div>
               {text}

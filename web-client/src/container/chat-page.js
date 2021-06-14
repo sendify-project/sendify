@@ -17,7 +17,7 @@ function ChatPage({ user, logout }) {
       extraHeaders: {
         Authorization: `bearer ${user.accessToken}`,
         'X-User-Id': user.userId,
-        'X-Sendify-Username': user.firstname || 'Unknown',
+        'X-Username': user.firstname || 'Unknown',
       },
       autoConnect: false,
     })

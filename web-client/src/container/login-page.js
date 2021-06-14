@@ -31,7 +31,7 @@ function LoginPage({ setUser, getUserInfo, logout }) {
           localStorage.setItem('firstname', user.firstname)
           localStorage.setItem('lastname', user.lastname)
           localStorage.setItem('user_id', user.id)
-          setUser((prev) => ({ ...prev, ...user, accessToken: accessToken, isLogin: true }))
+          setUser((prev) => ({ ...prev, ...user, userId: user.id, accessToken: accessToken, isLogin: true }))
           history.push('/chat')
         } else {
           alert('Login fail')

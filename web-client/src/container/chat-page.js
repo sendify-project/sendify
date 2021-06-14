@@ -81,33 +81,36 @@ function ChatPage({ user, logout }) {
 
   const handleUploadKeyDown = (file) => {
     if (file !== '') {
-
       // Get channel id
-      let cid = 0;
+      let cid = 0
       axios
         .get('/api/channels')
         .then(async (res) => {
           alert(res.status)
-          console.log(res);
-          let c = res.data.channels;
-          for (let i = 0; i < c.channels.length; i++)
-            if (c[i]["name"] === currentChannel.name)
-              cid = c[i]["id"];
+          console.log(res)
+          let c = res.data.channels
+          for (let i = 0; i < c.channels.length; i++) if (c[i]['name'] === currentChannel.name) cid = c[i]['id']
         })
         .catch((err) => {
           console.log(err)
           alert('Cannot get channel-id')
         })
 
-      cid = 10; // TODO for test
+      cid = 10 // TODO for test
       if (cid !== 0) {
-        const data = new FormData();
-        data.append('file', file);
+        const data = new FormData()
+        data.append('file', file)
         // for (var key of data.entries()) {
         //   console.log(key[0] + ', ' + key[1]);
         // }
         axios
-          .post('https://sendify-beta.csie.org/upload', data, { headers: { "Authorization": `bearer ${user.accessToken}`, "X-Channel-Id": currentChannel.id, "Content-Type": "multipart/form-data" } })
+          .post('https://sendify-beta.csie.org/upload', data, {
+            headers: {
+              Authorization: `bearer ${user.accessToken}`,
+              'X-Channel-Id': currentChannel.id,
+              'Content-Type': 'multipart/form-data',
+            },
+          })
           .then(async (res) => {
             alert(res.status)
             console.log(res)
@@ -116,13 +119,33 @@ function ChatPage({ user, logout }) {
             // text type s3_url filesize createdAt username
             const username = user.firstname
             const filesize = res.data.size // TODO
-            console.log({ message: { s3_url: res.data.s3_url, type: res.data.type, text: res.data.orginal_filename, filesize: filesize }, room: currentChannel.name })
-            socket.emit('sendMessage', { message: { s3_url: res.data.s3_url, type: res.data.type, text: res.data.orginal_filename, filesize: filesize }, room: currentChannel.name }, (error) => {
-              if (error) {
-                console.log(error)
-                alert('fail to send message')
-              }
+            console.log({
+              message: {
+                s3_url: res.data.s3_url,
+                type: res.data.type,
+                text: res.data.orginal_filename,
+                filesize: filesize,
+              },
+              room: currentChannel.name,
             })
+            socket.emit(
+              'sendMessage',
+              {
+                message: {
+                  s3_url: res.data.s3_url,
+                  type: res.data.type,
+                  text: res.data.orginal_filename,
+                  filesize: filesize,
+                },
+                room: currentChannel.name,
+              },
+              (error) => {
+                if (error) {
+                  console.log(error)
+                  alert('fail to send message')
+                }
+              }
+            )
           })
           .catch((err) => {
             console.log(err)
@@ -220,7 +243,7 @@ function ChatPage({ user, logout }) {
                           filesize={el.filesize} // TODO text,img -> None
                           time={Date(el.createdAt)}
                           sender={el.username}
-                          left={parseInt(el.userId) !== parseInt(user.userId)}
+                          left={el.userId != user.userId}
                         />
                       ))}
                     </div>

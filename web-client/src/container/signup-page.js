@@ -20,29 +20,8 @@ function SignupPage({ setUser, getUserInfo, logout }) {
       .post('/api/signup', { email, password: passwd, firstname, lastname, address: 'taipei', phone_number: phone })
       .then(async (res) => {
         if (res.data.access_token) {
-          const accessToken = res.data.access_token
-          console.log(accessToken)
-          let user
-          try {
-            user = await getUserInfo(accessToken)
-            if (!user.firstname || !user.lastname) {
-              alert('login fail')
-              return history.push('/login')
-            }
-          } catch (err) {
-            console.log(err)
-            logout()
-            alert('login fail')
-            return history.push('/login')
-          }
-          localStorage.setItem('access_token', accessToken)
-          setUser((prev) => ({
-            ...prev,
-            ...user,
-            accessToken: res.data.access_token,
-            isLogin: true,
-          }))
-          history.push('/chat')
+          alert('sign up success')
+          history.push('/login')
         } else {
           alert('Sign up fail')
         }

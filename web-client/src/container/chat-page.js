@@ -10,7 +10,6 @@ function ChatPage({ user, logout }) {
   const chatContentDom = useRef(null)
   const [message, setMessage] = useState([])
   const [newMsg, setNewMsg] = useState('')
-  const [selectedFile, setSelectedFile] = useState('')
   const [currentChannel, setCurrentChannel] = useState({
     name: '',
     members: [],
@@ -82,21 +81,41 @@ function ChatPage({ user, logout }) {
 
   const handleUploadKeyDown = (file) => {
     if (file !== '') {
-      const data = new FormData();
-      data.append('file', file);
-      for (var key of data.entries()) {
-        console.log(key[0] + ', ' + key[1]);
-      }
+
+      // Get channel id
+      let cid = 0;
       axios
-        .post('/api/upload', data, { headers: { "X-User-Id": user.firstname, "X-Channel-Id": currentChannel.name, "Content-Type": "multipart/form-data" } }) // TODO
+        .get('/api/channels')
         .then(async (res) => {
           alert(res.status)
-          console.log(res) // TODO call sendMsg
+          console.log(res);
+          let c = res.data.channels;
+          for (let i = 0; i < c.channels.length; i++)
+            if (c[i]["name"] === currentChannel.name)
+              cid = c[i]["id"];
         })
         .catch((err) => {
           console.log(err)
-          alert('Something wrong occurs')
+          alert('Cannot get channel-id')
         })
+
+      if (cid !== 0) {
+        const data = new FormData();
+        data.append('file', file);
+        // for (var key of data.entries()) {
+        //   console.log(key[0] + ', ' + key[1]);
+        // }
+        axios
+          .post('/api/upload', data, { headers: { "X-Channel-Id": currentChannel.id, "Content-Type": "multipart/form-data" } })
+          .then(async (res) => {
+            alert(res.status)
+            console.log(res) // TODO call sendMsg
+          })
+          .catch((err) => {
+            console.log(err)
+            alert('Something wrong occurs')
+          })
+      }
     }
   }
 

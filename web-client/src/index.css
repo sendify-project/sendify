@@ -19042,3 +19042,15 @@ fieldset:disabled .btn {
 .bi-zoom-out::before {
   content: '\f5f1';
 }
+
+input[type='file'] {
+  display: none;
+}
+.custom-file-upload {
+  color: #6c757d;
+  border-color: #6c757d;
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}

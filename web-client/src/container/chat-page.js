@@ -223,14 +223,13 @@ function ChatPage({ user, logout }) {
                         onKeyPress={handleInputKeyPress}
                         onChange={(e) => setNewMsg(e.target.value)}
                       />
-                      <button class='btn btn-outline-secondary' id='button'>
+                      <label for='file-upload' class='custom-file-upload'>
                         <i class='bi bi-paperclip'></i>
-                      </button>
+                      </label>
                       <input
-                        id='file'
+                        id='file-upload'
                         type='file'
-                        // style={{ display: 'none' }}
-                        // onClick={(e) => e.target.value = ''} 
+                        // onClick={(e) => e.target.value = ''}
                         onChange={(e) => handleUploadKeyDown(e.target.files[0])}
                       />
                     </div>
@@ -249,7 +248,7 @@ function ChatPage({ user, logout }) {
           </footer>
         </div>
       </div>
-    </div >
+    </div>
   )
 }
 

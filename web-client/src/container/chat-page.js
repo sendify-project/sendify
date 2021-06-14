@@ -110,7 +110,19 @@ function ChatPage({ user, logout }) {
           .post('https://sendify-beta.csie.org/upload', data, { headers: { "Authorization": `bearer ${user.accessToken}`, "X-Channel-Id": currentChannel.id, "Content-Type": "multipart/form-data" } })
           .then(async (res) => {
             alert(res.status)
-            console.log(res) // TODO call sendMsg
+            console.log(res)
+
+            // TODO call sendMsg
+            // text type s3_url filesize createdAt username
+            const username = user.firstname
+            const filesize = res.data.size // TODO
+            console.log({ message: { s3_url: res.data.s3_url, type: res.data.type, text: res.data.orginal_filename, filesize: filesize }, room: currentChannel.name })
+            socket.emit('sendMessage', { message: { s3_url: res.data.s3_url, type: res.data.type, text: res.data.orginal_filename, filesize: filesize }, room: currentChannel.name }, (error) => {
+              if (error) {
+                console.log(error)
+                alert('fail to send message')
+              }
+            })
           })
           .catch((err) => {
             console.log(err)
@@ -208,7 +220,7 @@ function ChatPage({ user, logout }) {
                           filesize={el.filesize} // TODO text,img -> None
                           time={Date(el.createdAt)}
                           sender={el.username}
-                          left={el.userId !== user.userId}
+                          left={parseInt(el.userId) !== parseInt(user.userId)}
                         />
                       ))}
                     </div>

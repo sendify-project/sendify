@@ -5,7 +5,6 @@ const axios = require('axios')
 if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 const ACCOUNT_API = process.env.ACCOUNT_API
-const OBJECT_API = process.env.OBJECT_API
 
 router.post('/login', function (req, res, next) {
   axios

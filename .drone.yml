@@ -274,6 +274,6 @@ steps:
     MANIFEST_BRANCH: ${DRONE_COMMIT_BRANCH}
     KUSTOMIZATION: staging/object
   depends_on:
-    - push-registry
+    - object-push-registry
   when:
     event: push

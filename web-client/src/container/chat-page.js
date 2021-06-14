@@ -82,13 +82,19 @@ function ChatPage({ user, logout }) {
 
   const handleUploadKeyDown = (file) => {
     if (file !== '') {
-      const data = new FormData();
-      data.append('file', file);
+      const data = new FormData()
+      data.append('file', file)
       for (var key of data.entries()) {
-        console.log(key[0] + ', ' + key[1]);
+        console.log(key[0] + ', ' + key[1])
       }
       axios
-        .post('/api/upload', data, { headers: { "X-User-Id": user.firstname, "X-Channel-Id": currentChannel.name, "Content-Type": "multipart/form-data" } }) // TODO
+        .post('/api/upload', data, {
+          headers: {
+            'X-User-Id': user.firstname,
+            'X-Channel-Id': currentChannel.name,
+            'Content-Type': 'multipart/form-data',
+          },
+        }) // TODO
         .then(async (res) => {
           alert(res.status)
           console.log(res) // TODO call sendMsg
@@ -203,14 +209,13 @@ function ChatPage({ user, logout }) {
                         onKeyPress={handleInputKeyPress}
                         onChange={(e) => setNewMsg(e.target.value)}
                       />
-                      <button class='btn btn-outline-secondary' id='button'>
+                      <label for='file-upload' class='custom-file-upload'>
                         <i class='bi bi-paperclip'></i>
-                      </button>
+                      </label>
                       <input
-                        id='file'
+                        id='file-upload'
                         type='file'
-                        // style={{ display: 'none' }}
-                        // onClick={(e) => e.target.value = ''} 
+                        // onClick={(e) => e.target.value = ''}
                         onChange={(e) => handleUploadKeyDown(e.target.files[0])}
                       />
                     </div>
@@ -229,7 +234,7 @@ function ChatPage({ user, logout }) {
           </footer>
         </div>
       </div>
-    </div >
+    </div>
   )
 }
 

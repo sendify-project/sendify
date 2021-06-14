@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import socketIOClient from 'socket.io-client'
 import SidebarItem from 'components/sidebar-item'
@@ -7,6 +7,7 @@ import 'index.css'
 import axios from 'axios'
 
 function ChatPage({ user, logout }) {
+  const chatContentDom = useRef(null)
   const [message, setMessage] = useState([])
   const [newMsg, setNewMsg] = useState('')
   const [selectedFile, setSelectedFile] = useState('')
@@ -18,8 +19,8 @@ function ChatPage({ user, logout }) {
     socketIOClient('/sendify', {
       extraHeaders: {
         Authorization: `bearer ${user.accessToken}`,
-        'X-User-Id': 0,
-        'X-Sendify-Username': user.firstname || 'Unknown',
+        'X-User-Id': user.userId,
+        'X-Username': user.firstname || 'Unknown',
       },
       autoConnect: false,
     })
@@ -30,6 +31,11 @@ function ChatPage({ user, logout }) {
     socket.on('message', (data) => {
       console.log({ message: data })
       setMessage((prev) => [...prev, data])
+      chatContentDom.current.scrollTo({
+        top: chatContentDom.current.scrollHeight,
+        left: 0,
+        behavior: 'smooth',
+      })
     })
     socket.on('roomData', (data) => {
       console.log({ roomData: data })
@@ -60,13 +66,14 @@ function ChatPage({ user, logout }) {
     }
   }, [user.name, currentChannel.name])
 
-  const handleInputKeyDown = (e) => {
+  const handleInputKeyPress = (e) => {
     if (e.target.value !== '' && e.key === 'Enter') {
-      const username = user.firstname === '' ? 'Unknown' : user.firstname
+      const username = user.firstname
       console.log({ username, room: currentChannel.name, message: e.target.value })
       socket.emit('sendMessage', { message: e.target.value, room: currentChannel.name }, (error) => {
         if (error) {
-          alert(error)
+          console.log(error)
+          alert('fail to send message')
         }
       })
       setNewMsg('')
@@ -171,7 +178,7 @@ function ChatPage({ user, logout }) {
                       </button>
                     </div>
                   </div>
-                  <div class='card-body pt-4 bg-grey' style={{ overflow: 'auto' }}>
+                  <div class='card-body pt-4 bg-grey' style={{ overflow: 'auto' }} ref={chatContentDom}>
                     <div class='chat-content'>
                       {message.map((el) => (
                         <ChatItem
@@ -180,7 +187,7 @@ function ChatPage({ user, logout }) {
                           s3_url={el.s3_url} // TODO text -> None
                           time={Date(el.createdAt)}
                           sender={el.username}
-                          left={el.username !== user.firstname}
+                          left={el.userId !== user.userId}
                         />
                       ))}
                     </div>
@@ -192,7 +199,7 @@ function ChatPage({ user, logout }) {
                         class='form-control'
                         placeholder='Type your message..'
                         value={newMsg}
-                        onKeyDown={handleInputKeyDown}
+                        onKeyPress={handleInputKeyPress}
                         onChange={(e) => setNewMsg(e.target.value)}
                       />
                       <button class='btn btn-outline-secondary' id='button'>

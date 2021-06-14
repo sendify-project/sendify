@@ -12,6 +12,7 @@ function App() {
     firstname: '',
     lastname: '',
     phone: '',
+    userId: undefined,
     isLogin: false,
   })
   const history = useHistory()
@@ -39,7 +40,7 @@ function App() {
   // }, [user.accessToken])
 
   const logout = () => {
-    setUser({ name: '', accessToken: '', firstname: '', lastname: '', phone: '', isLogin: false })
+    setUser({ name: '', accessToken: '', firstname: '', lastname: '', phone: '', userId: undefined, isLogin: false })
     localStorage.removeItem('access_token')
     history.push('/login')
   }
@@ -70,8 +71,9 @@ function CheckLocalStorage({ user, setUser }) {
     const accessToken = localStorage.getItem('access_token')
     const firstname = localStorage.getItem('firstname')
     const lastname = localStorage.getItem('lastname')
+    const userId = localStorage.getItem('user_id')
     if (accessToken && accessToken !== '' && accessToken !== user.accessToken) {
-      setUser((prev) => ({ ...prev, accessToken, firstname, lastname, isLogin: true }))
+      setUser((prev) => ({ ...prev, accessToken, firstname, lastname, userId, isLogin: true }))
       history.push('/chat')
     }
   }, [])

@@ -243,7 +243,7 @@ function ChatPage({ user, logout }) {
                           filesize={el.filesize} // TODO text,img -> None
                           time={Date(el.createdAt)}
                           sender={el.username}
-                          left={el.userId != user.userId}
+                          left={el.userId !== user.userId}
                         />
                       ))}
                     </div>

@@ -71,7 +71,7 @@ function CheckLocalStorage({ user, setUser }) {
     const accessToken = localStorage.getItem('access_token')
     const firstname = localStorage.getItem('firstname')
     const lastname = localStorage.getItem('lastname')
-    const userId = localStorage.getItem('user_id')
+    const userId = parseInt(localStorage.getItem('user_id'))
     if (accessToken && accessToken !== '' && accessToken !== user.accessToken) {
       setUser((prev) => ({ ...prev, accessToken, firstname, lastname, userId, isLogin: true }))
       history.push('/chat')

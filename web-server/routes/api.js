@@ -4,6 +4,7 @@ const axios = require('axios')
 const multer = require('multer')
 const upload = multer({ dest: 'uploads/' })
 const FormData = require('form-data')
+const fs = require('fs')
 
 if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
@@ -58,7 +59,7 @@ router.get('/account', function (req, res, next) {
 
 router.post('/upload', upload.single('file'), function (req, res, next) {
   const data = new FormData()
-  data['file'] = req.file
+  data.append('file', fs.createReadStream(req.file.path))
   axios
     .post(`${OBJECT_API}/upload`, {
       data: data,

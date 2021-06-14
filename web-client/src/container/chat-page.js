@@ -9,6 +9,7 @@ import axios from 'axios'
 function ChatPage({ user, logout }) {
   const [message, setMessage] = useState([])
   const [newMsg, setNewMsg] = useState('')
+  const [selectedFile, setSelectedFile] = useState('')
   const [currentChannel, setCurrentChannel] = useState({
     name: '',
     members: [],
@@ -72,26 +73,24 @@ function ChatPage({ user, logout }) {
     }
   }
 
-  const handleUpload = (e) => {
-    if (e.target.value !== '') {
+  const handleUploadKeyDown = (file) => {
+    if (file !== '') {
+      const data = new FormData();
+      data.append('file', file);
+      for (var key of data.entries()) {
+        console.log(key[0] + ', ' + key[1]);
+      }
       axios
-        .post('/upload', { file: e.target.value }, { headers: { "X-User-Id": user.firstname, "X-Channel-Id": currentChannel.name } }) // TODO
+        .post('/api/upload', data, { headers: { "X-User-Id": user.firstname, "X-Channel-Id": currentChannel.name, "Content-Type": "multipart/form-data" } }) // TODO
         .then(async (res) => {
-          alert(res)
+          alert(res.status)
+          console.log(res) // TODO call sendMsg
         })
         .catch((err) => {
           console.log(err)
           alert('Something wrong occurs')
         })
     }
-  }
-
-  function upload(e) {
-    var file = e.files[0]
-    if (!file) {
-      return
-    }
-    e.value = ''
   }
 
   return (
@@ -196,11 +195,16 @@ function ChatPage({ user, logout }) {
                         onKeyDown={handleInputKeyDown}
                         onChange={(e) => setNewMsg(e.target.value)}
                       />
-                      {/* onChange={(e) => handleUpload(e.target.value)} */}
-                      <input id='file' type='file' onchange='upload(this)' style={{ display: 'none' }} />
-                      <button class='btn btn-outline-secondary' type='button' id='button' onclick='file.click()'>
+                      <button class='btn btn-outline-secondary' id='button'>
                         <i class='bi bi-paperclip'></i>
                       </button>
+                      <input
+                        id='file'
+                        type='file'
+                        // style={{ display: 'none' }}
+                        // onClick={(e) => e.target.value = ''} 
+                        onChange={(e) => handleUploadKeyDown(e.target.files[0])}
+                      />
                     </div>
                   </div>
                 </div>
@@ -217,7 +221,7 @@ function ChatPage({ user, logout }) {
           </footer>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

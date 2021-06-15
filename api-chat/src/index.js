@@ -69,15 +69,15 @@ nsp.on('connection', (socket) => {
     callback()
   })
 
-  socket.on('sendMessage', ({ message, room, channelId }, callback) => {
+  socket.on('sendMessage', ({ content, type, s3_url, filesize, room, channelId }, callback) => {
     // const user = getUser(socket.id)
     const filter = new Filter()
 
-    if (filter.isProfane(message)) {
+    if (filter.isProfane(content)) {
       return callback('Profanity is not allowed!')
     }
 
-    const data = { channel_id: BigInt(channelId), user_id: BigInt(userId), type: 'text', content: message }
+    const data = { channel_id: BigInt(channelId), user_id: BigInt(userId), type: 'text', content: content, s3_url: s3_url, filesize: filesize }
     console.log({ data: toJson(data) })
     axios
       .post(`${STORE_API}/api/message`, toJson(data))
@@ -86,8 +86,9 @@ nsp.on('connection', (socket) => {
         if (res.data.msg !== 'ok') {
           throw new Error(res.data.msg)
         } else {
-          console.log(`A user "${username}" send message: "${message}" from room ${room}`)
-          nsp.to(room).emit('message', generateMessage(channelId, userId, username, message))
+          console.log(`A user "${username}" send message: "${content}" from room ${room}`)
+          // nsp.to(room).emit('message', generateMessage(channelId, userId, username, message))
+          nsp.to(room).emit('message', generateMessage(channelId, userId, username, content, type, s3_url, filesize))
           callback()
         }
       })

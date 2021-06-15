@@ -6,6 +6,7 @@ import SidebarItem from 'components/sidebar-item'
 import ChatItem from 'components/chat-item'
 import 'index.css'
 import axios from 'axios'
+import prettyBytes from 'pretty-bytes'
 
 function ChatPage({ user, logout }) {
   const chatContentDom = useRef(null)
@@ -122,7 +123,14 @@ function ChatPage({ user, logout }) {
       console.log({ username, room: currentChannel.name, message: e.target.value, channelId: currentChannel.id })
       socket.emit(
         'sendMessage',
-        { message: e.target.value, room: currentChannel.name, channelId: currentChannel.id },
+        {
+          content: e.target.value,
+          type: 'text',
+          s3_url: '',
+          filesize: '',
+          room: currentChannel.name,
+          channelId: currentChannel.id,
+        },
         (error) => {
           if (error) {
             console.log(error)
@@ -155,77 +163,57 @@ function ChatPage({ user, logout }) {
 
   const handleUploadKeyDown = (file) => {
     if (file !== '') {
-      // Get channel id
-      let cid = 0
+      const data = new FormData()
+      data.append('file', file)
       axios
-        .get('/api/channels')
+        .post('https://sendify-beta.csie.org/upload', data, {
+          headers: {
+            Authorization: `bearer ${user.accessToken}`,
+            'X-Channel-Id': currentChannel.id,
+            'Content-Type': 'multipart/form-data',
+          },
+        })
         .then(async (res) => {
           alert(res.status)
           console.log(res)
-          let c = res.data.channels
-          for (let i = 0; i < c.channels.length; i++) if (c[i]['name'] === currentChannel.name) cid = c[i]['id']
+
+          // TODO call sendMsg
+          // text type s3_url filesize createdAt username
+          const username = user.firstname
+          const filesize = prettyBytes(file.size)
+          console.log({
+            username,
+            room: currentChannel.name,
+            content: res.data.orginal_filename,
+            type: res.data.type,
+            s3_url: res.data.s3_url,
+            filesize: filesize,
+            room: currentChannel.name,
+            channelId: currentChannel.id,
+          })
+          socket.emit(
+            'sendMessage',
+            {
+              content: res.data.orginal_filename,
+              type: res.data.type,
+              s3_url: res.data.s3_url,
+              filesize: filesize,
+              room: currentChannel.name,
+              channelId: currentChannel.id,
+            },
+
+            (error) => {
+              if (error) {
+                console.log(error)
+                alert('fail to send message')
+              }
+            }
+          )
         })
         .catch((err) => {
           console.log(err)
-          alert('Cannot get channel-id')
+          alert('Something wrong occurs')
         })
-
-      cid = 10 // TODO for test
-      if (cid !== 0) {
-        const data = new FormData()
-        data.append('file', file)
-        // for (var key of data.entries()) {
-        //   console.log(key[0] + ', ' + key[1]);
-        // }
-        axios
-          .post('https://sendify-beta.csie.org/upload', data, {
-            headers: {
-              Authorization: `bearer ${user.accessToken}`,
-              'X-Channel-Id': currentChannel.id,
-              'Content-Type': 'multipart/form-data',
-            },
-          })
-          .then(async (res) => {
-            alert(res.status)
-            console.log(res)
-
-            // TODO call sendMsg
-            // text type s3_url filesize createdAt username
-            const username = user.firstname
-            const filesize = res.data.size // TODO
-            console.log({
-              message: {
-                s3_url: res.data.s3_url,
-                type: res.data.type,
-                text: res.data.orginal_filename,
-                filesize: filesize,
-              },
-              room: currentChannel.name,
-            })
-            socket.emit(
-              'sendMessage',
-              {
-                message: {
-                  s3_url: res.data.s3_url,
-                  type: res.data.type,
-                  text: res.data.orginal_filename,
-                  filesize: filesize,
-                },
-                room: currentChannel.name,
-              },
-              (error) => {
-                if (error) {
-                  console.log(error)
-                  alert('fail to send message')
-                }
-              }
-            )
-          })
-          .catch((err) => {
-            console.log(err)
-            alert('Something wrong occurs')
-          })
-      }
     }
   }
 

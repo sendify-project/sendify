@@ -194,7 +194,6 @@ function ChatPage({ user, logout }) {
             type: res.data.type,
             s3_url: res.data.s3_url,
             filesize: filesize,
-            room: currentChannel.name,
             channelId: currentChannel.id,
           })
           socket.emit(

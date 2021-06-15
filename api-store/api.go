@@ -58,6 +58,25 @@ func CreateChannel(c *gin.Context) {
 	}
 }
 
+func DeleteChannel(c *gin.Context) {
+	id := c.Param("id")
+	channelID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		response(c, http.StatusBadRequest, ErrInvalidParam)
+		return
+	}
+	err = deleteChannel(c.Request.Context(), channelID)
+	switch err {
+	case nil:
+		c.JSON(http.StatusNoContent, OkMsg)
+		return
+	default:
+		logger.ContextLogger.Error(err.Error())
+		response(c, http.StatusInternalServerError, ErrServer)
+		return
+	}
+}
+
 func ListChannels(c *gin.Context) {
 	channels, err := listChannels(c.Request.Context())
 	switch err {

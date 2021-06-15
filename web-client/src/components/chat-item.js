@@ -1,3 +1,7 @@
+const setImg = (e) => {
+  alert('hi')
+  document.getElementById('photo').src = e.target.src
+}
 function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
   // console.log(text, type, s3_url, time, sender, left, filesize)
   if (left) {
@@ -23,14 +27,14 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
                   <span class='small'>{filesize}</span>
                 </div>
               </div>
-              <span style='font-size:small;'>
+              <span style={{ fontSize: 'small' }}>
                 |{' '}
-                <a href={`${s3_url}`} style='border: 0px;'>
+                <a href={`${s3_url}`} style={{ border: 0 + 'px;' }}>
                   Save
                 </a>{' '}
                 |{' '}
               </span>
-              <span style='font-size:xx-small;'>{new Date(time).toLocaleTimeString()}</span>
+              <span style={{ fontSize: 'xx-small' }}>{new Date(time).toLocaleTimeString()}</span>
             </div>
           </div>
         </div>
@@ -48,18 +52,18 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
                 />
                 &nbsp; {sender}
               </div>
-              <a type='button' data-bs-toggle='modal' data-bs-target='#photoPreview' style='border: 0px;'>
-                <img src={`${s3_url}`} onclick='setImg(this)' />
+              <a type='button' data-bs-toggle='modal' data-bs-target='#photoPreview' style={{ border: 0 + 'px;' }}>
+                <img src={`${s3_url}`} onClick={{ setImg }} />
               </a>
               <br />
-              <span style='font-size:small;'>
+              <span style={{ fontSize: 'small' }}>
                 |{' '}
-                <a href={`${s3_url}`} style='border: 0px;'>
+                <a href={`${s3_url}`} style={{ border: 0 + 'px;' }}>
                   Save
                 </a>{' '}
                 |{' '}
               </span>
-              <span style='font-size:xx-small;'>{new Date(time).toLocaleTimeString()}</span>
+              <span style={{ fontSize: 'xx-small' }}>{new Date(time).toLocaleTimeString()}</span>
             </div>
           </div>
         </div>
@@ -107,14 +111,14 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
                   {content} <br /> <span class='small'>{filesize}</span>
                 </div>
               </div>
-              <span style='font-size:small;'>
+              <span style={{ fontSize: 'small' }}>
                 |{' '}
-                <a href={`${s3_url}`} style='border: 0px;'>
+                <a href={`${s3_url}`} style={{ border: 0 + 'px;' }}>
                   Save
                 </a>{' '}
                 |{' '}
               </span>
-              <span style='font-size:xx-small;'>{new Date(time).toLocaleTimeString()}</span>
+              <span style={{ fontSize: 'xx-small' }}>{new Date(time).toLocaleTimeString()}</span>
             </div>
           </div>
         </div>
@@ -132,18 +136,18 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
                 />
                 &nbsp; {sender}
               </div>
-              <a type='button' data-bs-toggle='modal' data-bs-target='#photoPreview' style='border: 0px;'>
-                <img src={`${s3_url}`} onclick='setImg(this)' />
+              <a type='button' data-bs-toggle='modal' data-bs-target='#photoPreview' style={{ border: 0 + 'px;' }}>
+                <img src={`${s3_url}`} onClick={{ setImg }} />
               </a>
               <br />
-              <span style='font-size:small;'>
+              <span style={{ fontSize: 'small' }}>
                 |{' '}
-                <a href={`${s3_url}`} style='border: 0px;'>
+                <a href={`${s3_url}`} style={{ border: 0 + 'px;' }}>
                   Save
                 </a>{' '}
                 |{' '}
               </span>
-              <span style='font-size:xx-small;'>{new Date(time).toLocaleTimeString()}</span>
+              <span style={{ fontSize: 'xx-small' }}>{new Date(time).toLocaleTimeString()}</span>
             </div>
           </div>
         </div>

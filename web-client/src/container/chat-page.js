@@ -110,8 +110,7 @@ function ChatPage({ user, logout }) {
         console.log({ messageList: res.data })
         if (res.data.messages) {
           const msg = res.data.messages
-          msg.sort((a, b) => a.createdAt - b.createdAt)
-          setMessage(msg)
+          setMessage(msg.reverse())
           chatContentDom.current.scrollTo({
             top: chatContentDom.current.scrollHeight,
             left: 0,
@@ -313,7 +312,7 @@ function ChatPage({ user, logout }) {
                             type={el.type} // TODO {text,img,file}
                             s3_url={el.s3_url} // TODO text -> None
                             filesize={el.filesize} // TODO text,img -> None
-                            time={el.createdAt}
+                            time={el.createdAt || el.timestamp * 1000}
                             sender={el.username}
                             left={el.user_id !== user.userId}
                           />

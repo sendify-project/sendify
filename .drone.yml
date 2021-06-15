@@ -31,7 +31,7 @@ steps:
     - clone
   when:
     event: push
-- name: account-update-manifests
+- name: account-update-manifests-staging
   pull: if-not-exists
   image: minghsu0107/update-kustomization:v1.0.3
   environment:
@@ -44,6 +44,23 @@ steps:
     MANIFEST_REPO: sendify-manifests
     MANIFEST_BRANCH: ${DRONE_COMMIT_BRANCH}
     KUSTOMIZATION: staging/account
+  depends_on:
+    - account-push-registry
+  when:
+    event: push
+- name: account-update-manifests-prod
+  pull: if-not-exists
+  image: minghsu0107/update-kustomization:v1.0.3
+  environment:
+    SSH_KEY:
+      from_secret: ssh_key
+    IMAGES: minghsu0107/sendify-account
+    IMAGE_TAG: ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}
+    MANIFEST_HOST: github.com
+    MANIFEST_USER: minghsu0107
+    MANIFEST_REPO: sendify-manifests
+    MANIFEST_BRANCH: ${DRONE_COMMIT_BRANCH}
+    KUSTOMIZATION: prod/account
   depends_on:
     - account-push-registry
   when:
@@ -201,7 +218,7 @@ steps:
     - clone
   when:
     event: push
-- name: update-manifests
+- name: update-manifests-staging
   pull: if-not-exists
   image: minghsu0107/update-kustomization:v1.0.3
   environment:
@@ -214,6 +231,23 @@ steps:
     MANIFEST_REPO: sendify-manifests
     MANIFEST_BRANCH: ${DRONE_COMMIT_BRANCH}
     KUSTOMIZATION: staging/api-store
+  depends_on:
+    - push-registry
+  when:
+    event: push
+- name: update-manifests-prod
+  pull: if-not-exists
+  image: minghsu0107/update-kustomization:v1.0.3
+  environment:
+    SSH_KEY:
+      from_secret: ssh_key
+    IMAGES: minghsu0107/sendify-api-store
+    IMAGE_TAG: ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}
+    MANIFEST_HOST: github.com
+    MANIFEST_USER: minghsu0107
+    MANIFEST_REPO: sendify-manifests
+    MANIFEST_BRANCH: ${DRONE_COMMIT_BRANCH}
+    KUSTOMIZATION: prod/api-store
   depends_on:
     - push-registry
   when:

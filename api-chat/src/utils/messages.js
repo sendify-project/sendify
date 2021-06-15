@@ -1,8 +1,10 @@
-const generateMessage = (userId, username, text) => {
+const generateMessage = (channelId, userId, username, text) => {
   return {
-    userId,
+    channel_id: channelId,
+    user_id: userId,
     username,
-    text,
+    type: 'text',
+    content: text,
     createdAt: new Date().getTime(),
   }
 }

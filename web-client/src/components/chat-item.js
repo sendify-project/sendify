@@ -1,4 +1,4 @@
-function ChatItem({ text, type, s3_url, time, sender, left, filesize }) {
+function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
   // console.log(text, type, s3_url, time, sender, left, filesize)
   if (left) {
     if (type === 'file') {
@@ -19,7 +19,7 @@ function ChatItem({ text, type, s3_url, time, sender, left, filesize }) {
                   <i class='bi bi-file-earmark-text fs-1'></i>
                 </div>
                 <div class='col-md-8'>
-                  {text} <br />
+                  {content} <br />
                   <span class='small'>{filesize}</span>
                 </div>
               </div>
@@ -77,7 +77,7 @@ function ChatItem({ text, type, s3_url, time, sender, left, filesize }) {
                 />
                 &nbsp; {sender}
               </div>
-              {text}
+              {content}
               <br />
               <span style={{ fontSize: 'xx-small' }}>{new Date(time).toLocaleTimeString()}</span>
             </div>
@@ -104,7 +104,7 @@ function ChatItem({ text, type, s3_url, time, sender, left, filesize }) {
                   <i class='bi bi-file-earmark-text fs-1'></i>
                 </div>
                 <div class='col-md-8'>
-                  {text} <br /> <span class='small'>{filesize}</span>
+                  {content} <br /> <span class='small'>{filesize}</span>
                 </div>
               </div>
               <span style='font-size:small;'>
@@ -161,7 +161,7 @@ function ChatItem({ text, type, s3_url, time, sender, left, filesize }) {
                 />
                 &nbsp; {sender}
               </div>
-              {text}
+              {content}
               <br />
               <span style={{ fontSize: 'xx-small' }}>{new Date(time).toLocaleTimeString()}</span>
             </div>

@@ -2,11 +2,16 @@ const path = require('path')
 const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
+const axios = require('axios')
+const JSONbig = require('json-bigint')
 const Filter = require('bad-words')
 const redisAdapter = require('@socket.io/redis-adapter')
 const redis = require('./utils/redis')
 const { generateMessage, generateLocationMessage } = require('./utils/messages')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
+
+if (process.env.NODE_ENV !== 'production') require('dotenv').config()
+const STORE_API = process.env.STORE_API
 
 const app = express()
 const server = http.createServer(app)
@@ -54,8 +59,8 @@ nsp.on('connection', (socket) => {
     socket.join(user.room)
     console.log('A new user joined' + JSON.stringify(user))
 
-    socket.emit('message', generateMessage('Admin', 'Welcome!'))
-    socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined!`))
+    // socket.emit('message', generateMessage('Admin', 'Welcome!'))
+    // socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined!`))
     nsp.to(user.room).emit('roomData', {
       room: user.room,
       users: getUsersInRoom(user.room),
@@ -64,7 +69,7 @@ nsp.on('connection', (socket) => {
     callback()
   })
 
-  socket.on('sendMessage', ({ message, room }, callback) => {
+  socket.on('sendMessage', ({ message, room, channelId }, callback) => {
     // const user = getUser(socket.id)
     const filter = new Filter()
 
@@ -72,20 +77,24 @@ nsp.on('connection', (socket) => {
       return callback('Profanity is not allowed!')
     }
 
-    console.log(`A user "${username}" send message: "${message}" from room ${room}`)
-    nsp.to(room).emit('message', generateMessage(userId, username, message))
-    callback()
-  })
-
-  socket.on('sendLocation', (coords, callback) => {
-    const user = getUser(socket.id)
-    nsp
-      .to(user.room)
-      .emit(
-        'locationMessage',
-        generateLocationMessage(user.username, `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
-      )
-    callback()
+    const data = { channel_id: BigInt(channelId), user_id: BigInt(userId), type: 'text', content: message }
+    console.log({ data: toJson(data) })
+    axios
+      .post(`${STORE_API}/api/message`, toJson(data))
+      .then((res) => {
+        console.log(res.data)
+        if (res.data.msg !== 'ok') {
+          throw new Error(res.data.msg)
+        } else {
+          console.log(`A user "${username}" send message: "${message}" from room ${room}`)
+          nsp.to(room).emit('message', generateMessage(channelId, userId, username, message))
+          callback()
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+        callback(err.response?.data.msg || 'fail to save to db')
+      })
   })
 
   socket.on('disconnect', () => {
@@ -93,7 +102,7 @@ nsp.on('connection', (socket) => {
     const user = removeUser(socket.id)
 
     if (user) {
-      nsp.to(user.room).emit('message', generateMessage('Admin', `${user.username} has left!`))
+      // nsp.to(user.room).emit('message', generateMessage('Admin', `${user.username} has left!`))
       nsp.to(user.room).emit('roomData', {
         room: user.room,
         users: getUsersInRoom(user.room),
@@ -105,3 +114,9 @@ nsp.on('connection', (socket) => {
 server.listen(port, () => {
   console.log(`Server is up on port ${port}!`)
 })
+
+function toJson(data) {
+  if (data !== undefined) {
+    return JSON.stringify(data, (_, v) => (typeof v === 'bigint' ? `${v}n` : v)).replace(/"(-?\d+)n"/g, (_, a) => a)
+  }
+}

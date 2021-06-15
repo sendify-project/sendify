@@ -42,11 +42,10 @@ router.get('/account', function (req, res, next) {
     .get(`${ACCOUNT_API}/api/account`, {
       headers: { Authorization: req.get('Authorization') },
       transformResponse: (res) => {
-        return JSONbig.parse(res)
+        return JSONbig({ storeAsString: true }).parse(res)
       },
     })
     .then((result) => {
-      if (result.data.id) result.data.id = result.data.id.toString()
       res.send(result.data)
     })
     .catch((err) => {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import socketIOClient from 'socket.io-client'
+import JSONbig from 'json-bigint'
 import SidebarItem from 'components/sidebar-item'
 import ChatItem from 'components/chat-item'
 import 'index.css'
@@ -40,10 +41,11 @@ function ChatPage({ user, logout }) {
     })
     socket.on('roomData', (data) => {
       console.log({ roomData: data })
-      setCurrentChannel({
+      setCurrentChannel((prev) => ({
         name: data.room,
         members: data.users,
-      })
+        id: prev.id,
+      }))
     })
     // fetch channel list
     fetchChannels()
@@ -58,6 +60,8 @@ function ChatPage({ user, logout }) {
         if (error) {
           console.log(error)
           alert(error)
+        } else {
+          fetchMsgByChannels(currentChannel.id)
         }
       })
       setMessage([])
@@ -66,7 +70,11 @@ function ChatPage({ user, logout }) {
 
   const fetchChannels = () => {
     axios
-      .get('/api/channels')
+      .get('/api/channels', {
+        transformResponse: (res) => {
+          return JSONbig({ storeAsString: true }).parse(res)
+        },
+      })
       .then((res) => {
         console.log({ channelList: res.data })
         if (res.data.channels) {
@@ -79,16 +87,49 @@ function ChatPage({ user, logout }) {
       })
   }
 
+  const fetchMsgByChannels = (channelId) => {
+    axios
+      .get('/api/messages', {
+        params: {
+          'channel-id': channelId,
+        },
+        transformResponse: (res) => {
+          return JSONbig({ storeAsString: true }).parse(res)
+        },
+      })
+      .then((res) => {
+        console.log({ messageList: res.data })
+        if (res.data.messages) {
+          const msg = res.data.messages
+          msg.sort((a, b) => a.createdAt - b.createdAt)
+          setMessage(msg)
+          chatContentDom.current.scrollTo({
+            top: chatContentDom.current.scrollHeight,
+            left: 0,
+            behavior: 'smooth',
+          })
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+        alert('fail to get channels list')
+      })
+  }
+
   const handleInputKeyPress = (e) => {
     if (e.target.value !== '' && e.key === 'Enter') {
       const username = user.firstname
-      console.log({ username, room: currentChannel.name, message: e.target.value })
-      socket.emit('sendMessage', { message: e.target.value, room: currentChannel.name }, (error) => {
-        if (error) {
-          console.log(error)
-          alert('fail to send message')
+      console.log({ username, room: currentChannel.name, message: e.target.value, channelId: currentChannel.id })
+      socket.emit(
+        'sendMessage',
+        { message: e.target.value, room: currentChannel.name, channelId: currentChannel.id },
+        (error) => {
+          if (error) {
+            console.log(error)
+            alert('fail to send message')
+          }
         }
-      })
+      )
       setNewMsg('')
     }
   }
@@ -218,7 +259,6 @@ function ChatPage({ user, logout }) {
                 />
               </li>
               <li className='sidebar-title'>All Channels</li>
-              {/* TODO */}
               {channels.map((el) => (
                 <SidebarItem
                   text={el.name}
@@ -273,13 +313,13 @@ function ChatPage({ user, logout }) {
                     <div class='chat-content'>
                       {message.map((el) => (
                         <ChatItem
-                          text={el.text} // {filename if img,file}
+                          content={el.content} // {filename if img,file}
                           type={el.type} // TODO {text,img,file}
                           s3_url={el.s3_url} // TODO text -> None
                           filesize={el.filesize} // TODO text,img -> None
                           time={el.createdAt}
                           sender={el.username}
-                          left={el.userId !== user.userId}
+                          left={el.user_id !== user.userId}
                         />
                       ))}
                     </div>

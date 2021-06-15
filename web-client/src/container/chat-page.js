@@ -13,6 +13,7 @@ function ChatPage({ user, logout }) {
   const [currentChannel, setCurrentChannel] = useState({
     name: '',
     members: [],
+    id: '',
   })
   const [channels, setChannels] = useState([])
   const [socket, setSocket] = useState(
@@ -101,6 +102,7 @@ function ChatPage({ user, logout }) {
             throw new Error(res.data.msg)
           } else {
             fetchChannels()
+            e.target.value = ''
           }
         })
         .catch((err) => {
@@ -275,7 +277,7 @@ function ChatPage({ user, logout }) {
                           type={el.type} // TODO {text,img,file}
                           s3_url={el.s3_url} // TODO text -> None
                           filesize={el.filesize} // TODO text,img -> None
-                          time={Date(el.createdAt)}
+                          time={el.createdAt}
                           sender={el.username}
                           left={el.userId !== user.userId}
                         />

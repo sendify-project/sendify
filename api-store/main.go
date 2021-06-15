@@ -34,6 +34,7 @@ func main() {
 	apiGroup := engine.Group("/api")
 
 	apiGroup.POST("/channel", CreateChannel)
+	apiGroup.DELETE("/channel/:id", DeleteChannel)
 	apiGroup.GET("/channels", ListChannels)
 
 	apiGroup.POST("/message", CreateMessage)

@@ -225,7 +225,7 @@ function ChatPage({ user, logout }) {
             <div class='d-flex justify-content-between'>
               <div class='logo'>
                 <Link to='/'>
-                  <img src='assets/images/logo/logo.png' alt='Logo' width='100' height='100' />
+                  <img src='assets/images/logo/logo.png' alt='Logo' />
                 </Link>
               </div>
               <div class='toggler d-sm-none'>

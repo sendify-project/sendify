@@ -11,5 +11,6 @@ CREATE TABLE messages (
     user_id varint,
     type varchar,
     content text,
+    insert_timestamp timestamp,
     PRIMARY KEY((channel_id), id)
 ) WITH CLUSTERING ORDER BY (id DESC);

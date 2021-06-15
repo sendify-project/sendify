@@ -162,7 +162,9 @@ function ChatPage({ user, logout }) {
   }
 
   const handleNewChannelKeyPress = (e) => {
-    if (e.target.value !== '' && e.key === 'Enter') {
+    if (channels.some((c) => c.name === e.target.value)) {
+      return alert('Creating a channel already exists is forbidden')
+    } else if (e.target.value !== '' && e.key === 'Enter') {
       axios
         .post('/api/channel', { name: e.target.value })
         .then((res) => {

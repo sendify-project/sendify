@@ -8,9 +8,13 @@ import 'index.css'
 import axios from 'axios'
 import prettyBytes from 'pretty-bytes'
 
+let UserList = {}
+
 function ChatPage({ user, logout }) {
   const chatContentDom = useRef(null)
-  const [message, setMessage] = useState([])
+  const [message, setMessage] = useState([
+    { type: 'text', content: 'Welcome! Please choose or create a channel', username: 'System', createdAt: new Date() },
+  ])
   const [newMsg, setNewMsg] = useState('')
   const [currentChannel, setCurrentChannel] = useState({
     name: '',
@@ -88,6 +92,9 @@ function ChatPage({ user, logout }) {
       })
   }
 
+  // const fetchUsernameById = userId => {
+  // }
+
   const fetchMsgByChannels = (channelId) => {
     axios
       .get('/api/messages', {
@@ -98,7 +105,7 @@ function ChatPage({ user, logout }) {
           return JSONbig({ storeAsString: true }).parse(res)
         },
       })
-      .then((res) => {
+      .then(async (res) => {
         // {
         //   content: e.target.value,
         //   type: 'text',
@@ -110,6 +117,11 @@ function ChatPage({ user, logout }) {
         console.log({ messageList: res.data })
         if (res.data.messages) {
           const msg = res.data.messages
+          // for (let m of res.data.messages) {
+          //   if (!UserList[m.user_id]) {
+          //     UserList[m.user_id] = await fetchUsernameById(m.user_id)
+          //   }
+          // }
           setMessage(msg.reverse())
           chatContentDom.current.scrollTo({
             top: chatContentDom.current.scrollHeight,
@@ -327,6 +339,7 @@ function ChatPage({ user, logout }) {
                           value={newMsg}
                           onKeyPress={handleInputKeyPress}
                           onChange={(e) => setNewMsg(e.target.value)}
+                          disabled={currentChannel.name === ''}
                         />
                         <label for='file-upload' class='custom-file-upload'>
                           <i class='bi bi-paperclip'></i>

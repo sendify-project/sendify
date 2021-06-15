@@ -77,7 +77,7 @@ nsp.on('connection', (socket) => {
       return callback('Profanity is not allowed!')
     }
 
-    const data = { channel_id: BigInt(channelId), user_id: BigInt(userId), type: 'text', content: content, s3_url: s3_url, filesize: filesize }
+    const data = { channel_id: BigInt(channelId), user_id: BigInt(userId), type: type, content: content, s3_url: s3_url, filesize: filesize }
     console.log({ data: toJson(data) })
     axios
       .post(`${STORE_API}/api/message`, toJson(data))

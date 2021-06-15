@@ -99,6 +99,14 @@ function ChatPage({ user, logout }) {
         },
       })
       .then((res) => {
+        // {
+        //   content: e.target.value,
+        //   type: 'text',
+        //   s3_url: '',
+        //   filesize: '',
+        //   room: currentChannel.name,
+        //   channelId: currentChannel.id,
+        // }
         console.log({ messageList: res.data })
         if (res.data.messages) {
           const msg = res.data.messages
@@ -345,18 +353,6 @@ function ChatPage({ user, logout }) {
               </div>
             </footer>
           </div>
-        </div>
-      </div>
-      <div
-        class='modal fade'
-        id='photoPreview'
-        tabIndex={-1}
-        role='dialog'
-        aria-labelledby='exampleModalCenterTitle'
-        aria-hidden='true'
-      >
-        <div class='modal-dialog modal-dialog-centered modal-dialog-centered modal-dialog-scrollable' role='document'>
-          <img id='photo' style={{ maxWidth: '-webkit-fill-available' }} />
         </div>
       </div>
     </>

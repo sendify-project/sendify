@@ -1,7 +1,5 @@
-const setImg = (e) => {
-  alert('hi')
-  document.getElementById('photo').src = e.target.src
-}
+import ModalItem from '../components/modal-item'
+
 function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
   // console.log(text, type, s3_url, time, sender, left, filesize)
   if (left) {
@@ -52,9 +50,7 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
                 />
                 &nbsp; {sender}
               </div>
-              <a type='button' data-bs-toggle='modal' data-bs-target='#photoPreview' style={{ border: 0 + 'px;' }}>
-                <img src={`${s3_url}`} onClick={{ setImg }} />
-              </a>
+              <ModalItem s3_url={`${s3_url}`} class='chat-message'></ModalItem>
               <br />
               <span style={{ fontSize: 'small' }}>
                 |{' '}
@@ -136,9 +132,7 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
                 />
                 &nbsp; {sender}
               </div>
-              <a type='button' data-bs-toggle='modal' data-bs-target='#photoPreview' style={{ border: 0 + 'px;' }}>
-                <img src={`${s3_url}`} onClick={{ setImg }} />
-              </a>
+              <ModalItem s3_url={`${s3_url}`} class='chat-message'></ModalItem>
               <br />
               <span style={{ fontSize: 'small' }}>
                 |{' '}

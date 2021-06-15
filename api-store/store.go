@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"os"
+	"time"
 
 	"github.com/gocql/gocql"
 	"github.com/sony/sonyflake"
@@ -29,6 +30,7 @@ type Message struct {
 	UserID    uint64 `json:"user_id" binding:"required"`
 	Type      string `json:"type" binding:"required"`
 	Content   string `json:"content" binding:"required"`
+	Timestamp int64  `json:"timestamp"`
 }
 
 func init() {
@@ -68,6 +70,13 @@ func createChannel(ctx context.Context, channel *Channel) error {
 	return nil
 }
 
+func deleteChannel(ctx context.Context, channelID uint64) error {
+	if err := session.Query("DELETE FROM channels WHERE id = ?", channelID).WithContext(ctx).Exec(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func listChannels(ctx context.Context) ([]*Channel, error) {
 	var channels []*Channel
 	scanner := session.Query(`SELECT id, name FROM channels`).WithContext(ctx).Iter().Scanner()
@@ -97,12 +106,13 @@ func createMessage(ctx context.Context, message *Message) error {
 		return err
 	}
 	message.ID = id
-	if err := session.Query("INSERT INTO messages (channel_id, id, user_id, type, content) VALUES (?, ?, ?, ?, ?)",
+	if err := session.Query("INSERT INTO messages (channel_id, id, user_id, type, content, insert_timestamp) VALUES (?, ?, ?, ?, ?, ?)",
 		message.ChannelID,
 		message.ID,
 		message.UserID,
 		message.Type,
-		message.Content).WithContext(ctx).Exec(); err != nil {
+		message.Content,
+		time.Now()).WithContext(ctx).Exec(); err != nil {
 		return err
 	}
 	return nil
@@ -110,24 +120,27 @@ func createMessage(ctx context.Context, message *Message) error {
 
 func listMessages(ctx context.Context, channelID uint64) ([]*Message, error) {
 	var messages []*Message
-	scanner := session.Query(`SELECT id, user_id, type, content FROM messages WHERE channel_id = ?`, channelID).WithContext(ctx).Iter().Scanner()
+	scanner := session.Query(`SELECT id, user_id, type, content, insert_timestamp FROM messages WHERE channel_id = ?`, channelID).WithContext(ctx).Iter().Scanner()
 	for scanner.Next() {
 		var (
 			id      uint64
 			userID  uint64
 			msgType string
 			content string
+			msgTime time.Time
 		)
-		err := scanner.Scan(&id, &userID, &msgType, &content)
+		err := scanner.Scan(&id, &userID, &msgType, &content, &msgTime)
 		if err != nil {
 			return nil, err
 		}
+
 		messages = append(messages, &Message{
 			ChannelID: channelID,
 			ID:        id,
 			UserID:    userID,
 			Type:      msgType,
 			Content:   content,
+			Timestamp: msgTime.Unix(),
 		})
 	}
 	if err := scanner.Err(); err != nil {

@@ -2,10 +2,12 @@ const express = require('express')
 const router = express.Router()
 const axios = require('axios')
 const JSONbig = require('json-bigint')
+const { createProxyMiddleware, fixRequestBody } = require('http-proxy-middleware')
 
 if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 const ACCOUNT_API = process.env.ACCOUNT_API
+const STORE_API = process.env.STORE_API
 
 router.post('/login', function (req, res, next) {
   axios
@@ -57,5 +59,15 @@ router.get('/account', function (req, res, next) {
       }
     })
 })
+
+router.use(
+  ['/channel', '/channels', '/message', '/messages'],
+  createProxyMiddleware({
+    target: STORE_API,
+    changeOrigin: true,
+    ws: false,
+    onProxyReq: fixRequestBody,
+  })
+)
 
 module.exports = router

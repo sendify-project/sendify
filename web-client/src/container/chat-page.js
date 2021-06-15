@@ -14,6 +14,7 @@ function ChatPage({ user, logout }) {
     name: '',
     members: [],
   })
+  const [channels, setChannels] = useState([])
   const [socket, setSocket] = useState(
     socketIOClient('/sendify', {
       extraHeaders: {
@@ -43,11 +44,8 @@ function ChatPage({ user, logout }) {
         members: data.users,
       })
     })
-    // for test
-    setCurrentChannel({
-      name: 'ntuim',
-      members: [],
-    })
+    // fetch channel list
+    fetchChannels()
 
     return () => socket.disconnect()
   }, [])
@@ -65,6 +63,21 @@ function ChatPage({ user, logout }) {
     }
   }, [user.name, currentChannel.name])
 
+  const fetchChannels = () => {
+    axios
+      .get('/api/channels')
+      .then((res) => {
+        console.log({ channelList: res.data })
+        if (res.data.channels) {
+          setChannels(res.data.channels)
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+        alert('fail to get channels list')
+      })
+  }
+
   const handleInputKeyPress = (e) => {
     if (e.target.value !== '' && e.key === 'Enter') {
       const username = user.firstname
@@ -76,6 +89,24 @@ function ChatPage({ user, logout }) {
         }
       })
       setNewMsg('')
+    }
+  }
+
+  const handleNewChannelKeyPress = (e) => {
+    if (e.target.value !== '' && e.key === 'Enter') {
+      axios
+        .post('/api/channel', { name: e.target.value })
+        .then((res) => {
+          if (res.data.msg !== 'ok') {
+            throw new Error(res.data.msg)
+          } else {
+            fetchChannels()
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          alert('fail to create new channel')
+        })
     }
   }
 
@@ -174,24 +205,27 @@ function ChatPage({ user, logout }) {
             </div>
           </div>
 
-          <div class='sidebar-menu'>
-            <ul class='menu'>
-              {/* <li class='sidebar-title'>Pinned Channels</li>
-
-              <li class='sidebar-item'>
-                <a href='index.html' class='sidebar-link'>
-                  <span># ntuim</span>
-                </a>
-              </li> */}
-
-              <li class='sidebar-title'>All Channels</li>
+          <div className='sidebar-menu'>
+            <ul className='menu'>
+              <li className='sidebar-title'>
+                <input
+                  type='text'
+                  class='form-control'
+                  placeholder='Create new channel'
+                  onKeyPress={handleNewChannelKeyPress}
+                />
+              </li>
+              <li className='sidebar-title'>All Channels</li>
               {/* TODO */}
-              <SidebarItem text='ntuim' onClick={() => setCurrentChannel({ members: [], name: 'ntuim' })} />
-              <SidebarItem text='family' onClick={() => setCurrentChannel({ members: [], name: 'family' })} />
-              <SidebarItem text='wendy' onClick={() => setCurrentChannel({ members: [], name: 'wendy' })} />
+              {channels.map((el) => (
+                <SidebarItem
+                  text={el.name}
+                  onClick={() => setCurrentChannel({ members: [], name: el.name, id: el.id })}
+                />
+              ))}
             </ul>
           </div>
-          <button class='sidebar-toggler btn x'>
+          <button className='sidebar-toggler btn x'>
             <i data-feather='x'></i>
           </button>
           <Link to='/'>

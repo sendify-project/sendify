@@ -61,22 +61,27 @@ func NewServer(config *conf.Config, engine *gin.Engine, router *Router, jwtAuthC
 
 // RegisterRoutes method register all endpoints
 func (s *Server) RegisterRoutes() {
-	authGroup := s.Engine.Group("/api")
+	apiGroup := s.Engine.Group("/api")
 	{
-		authGroup.POST("/signup", s.Router.SignUp)
-		authGroup.POST("/login", s.Router.Login)
-		authGroup.POST("/refresh", s.Router.RefreshToken)
+		apiGroup.POST("/signup", s.Router.SignUp)
+		apiGroup.POST("/login", s.Router.Login)
+		apiGroup.POST("/refresh", s.Router.RefreshToken)
 
-		withJWT := authGroup.Group("/auth")
-		withJWT.Use(s.jwtAuthChecker.JWTAuth())
+		authGroup := apiGroup.Group("/auth")
+		authGroup.Use(s.jwtAuthChecker.JWTAuth())
 		{
-			withJWT.Any("", s.Router.Auth)
+			authGroup.Any("", s.Router.Auth)
 		}
 
-		accountGroup := authGroup.Group("/account")
+		accountGroup := apiGroup.Group("/account")
 		accountGroup.Use(s.jwtAuthChecker.JWTAuth())
 		{
 			accountGroup.GET("", s.Router.GetCustomerPersonalInfo)
+		}
+
+		internalGroup := apiGroup.Group("internal")
+		{
+			internalGroup.GET("/account/:id", s.Router.GetCustomerPersonalInfoInternal)
 		}
 	}
 }

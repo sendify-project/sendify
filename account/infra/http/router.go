@@ -163,6 +163,32 @@ func (r *Router) GetCustomerPersonalInfo(c *gin.Context) {
 	}
 }
 
+// GetCustomerPersonalInfoInternal gets customer personal info
+func (r *Router) GetCustomerPersonalInfoInternal(c *gin.Context) {
+	id := c.Param("id")
+	customerID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		response(c, http.StatusBadRequest, presenter.ErrInvalidParam)
+		return
+	}
+	personalInfo, err := r.customerSvc.GetCustomerPersonalInfo(c.Request.Context(), customerID)
+	switch err {
+	case repo.ErrCustomerNotFound:
+		response(c, http.StatusNotFound, repo.ErrCustomerNotFound)
+	case nil:
+		c.JSON(http.StatusOK, &CustomerPersonalInfo{
+			ID:        customerID,
+			FirstName: personalInfo.FirstName,
+			LastName:  personalInfo.LastName,
+			Email:     personalInfo.Email,
+		})
+		return
+	default:
+		response(c, http.StatusInternalServerError, presenter.ErrServer)
+		return
+	}
+}
+
 func response(c *gin.Context, httpCode int, err error) {
 	message := err.Error()
 	c.JSON(httpCode, presenter.ErrResponse{

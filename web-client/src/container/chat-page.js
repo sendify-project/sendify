@@ -204,7 +204,7 @@ function ChatPage({ user, logout }) {
       const data = new FormData()
       data.append('file', file)
       axios
-        .post('https://sendify-beta.csie.org/upload', data, {
+        .post('/upload', data, {
           headers: {
             Authorization: `bearer ${user.accessToken}`,
             'X-Channel-Id': currentChannel.id,

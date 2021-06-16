@@ -1,12 +1,5 @@
 import React, { useState } from 'react'
 import { Modal } from 'reactstrap'
-{
-  /* 
-<div class='modal fade' id='photoPreview' tabIndex={-1} role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true'>
-        <div class='modal-dialog modal-dialog-centered modal-dialog-centered modal-dialog-scrollable' role='document'>
-          <img id='photo' style={{ maxWidth: '-webkit-fill-available' }} />
-        </div>*/
-}
 function ModalItem({ s3_url }) {
   const [modal, setModal] = useState(false)
   const toggle = (e) => {

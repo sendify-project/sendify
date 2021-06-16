@@ -7,9 +7,9 @@ function SidebarItem({ text, onClick, onClickDelete }) {
             <span># {text}</span>
           </div>
         </div>
-        <div class='sidebar-link'>
+        <div class='sidebar-link' onClick={onClickDelete}>
           <span>
-            <i class='bi bi-trash-fill' onClick={onClickDelete}></i>
+            <i class='bi bi-trash-fill'></i>
           </span>
         </div>
       </div>

@@ -117,6 +117,15 @@ function ChatPage({ user, logout }) {
         console.log({ messageList: res.data })
         if (res.data.messages) {
           const msg = res.data.messages
+          for (let i = 0; i < msg.length; i++) {
+            if (msg[i].type === 'file' || msg[i].type === 'img') {
+              let objectPayload = msg[i].content.split('#')
+              msg[i].s3_url = objectPayload[0]
+              msg[i].content = objectPayload[1]
+              msg[i].filesize = objectPayload[2]
+            }
+          }
+
           // for (let m of res.data.messages) {
           //   if (!UserList[m.user_id]) {
           //     UserList[m.user_id] = await fetchUsernameById(m.user_id)
@@ -195,7 +204,6 @@ function ChatPage({ user, logout }) {
           },
         })
         .then(async (res) => {
-          alert(res.status)
           console.log(res)
 
           // call sendMsg

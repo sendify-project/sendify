@@ -203,8 +203,9 @@ function ChatPage({ user, logout }) {
     if (file !== '') {
       const data = new FormData()
       data.append('file', file)
+      const endpoint = process.env.NODE_ENV === 'production' ? '/upload' : 'https://sendify-beta.csie.org/upload'
       axios
-        .post('/upload', data, {
+        .post(endpoint, data, {
           headers: {
             Authorization: `bearer ${user.accessToken}`,
             'X-Channel-Id': currentChannel.id,

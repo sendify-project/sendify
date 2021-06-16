@@ -92,8 +92,18 @@ function ChatPage({ user, logout }) {
       })
   }
 
-  // const fetchUsernameById = userId => {
-  // }
+  const fetchUsernameById = async (userId) => {
+    return axios
+      .get(`/api/internal/account/${userId}`)
+      .then((res) => {
+        console.log({ userId, res: res.data })
+        return res.data.firstname || 'Unknown'
+      })
+      .catch((err) => {
+        console.log(err)
+        return 'Unknown'
+      })
+  }
 
   const fetchMsgByChannels = (channelId) => {
     axios
@@ -106,14 +116,6 @@ function ChatPage({ user, logout }) {
         },
       })
       .then(async (res) => {
-        // {
-        //   content: e.target.value,
-        //   type: 'text',
-        //   s3_url: '',
-        //   filesize: '',
-        //   room: currentChannel.name,
-        //   channelId: currentChannel.id,
-        // }
         console.log({ messageList: res.data })
         if (res.data.messages) {
           const msg = res.data.messages
@@ -124,13 +126,14 @@ function ChatPage({ user, logout }) {
               msg[i].content = objectPayload[1]
               msg[i].filesize = objectPayload[2]
             }
+            if (!UserList[msg[i].user_id]) {
+              UserList[msg[i].user_id] = await fetchUsernameById(msg[i].user_id)
+              msg[i].username = UserList[msg[i].user_id]
+            } else {
+              msg[i].username = UserList[msg[i].user_id]
+            }
           }
 
-          // for (let m of res.data.messages) {
-          //   if (!UserList[m.user_id]) {
-          //     UserList[m.user_id] = await fetchUsernameById(m.user_id)
-          //   }
-          // }
           setMessage(msg.reverse())
           chatContentDom.current.scrollTo({
             top: chatContentDom.current.scrollHeight,

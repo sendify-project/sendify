@@ -59,6 +59,27 @@ router.get('/account', function (req, res, next) {
     })
 })
 
+router.get('/internal/account/:userId', function (req, res, next) {
+  axios
+    .get(`${ACCOUNT_API}/api/internal/account/${req.params.userId}`, {
+      transformResponse: (res) => {
+        return JSONbig({ storeAsString: true }).parse(res)
+      },
+    })
+    .then((result) => {
+      res.send(result.data)
+    })
+    .catch((err) => {
+      if (err.response) {
+        console.log(err.response)
+        res.send(err.response.data).status(err.response.status)
+      } else {
+        console.log(err)
+        res.send('internal error').status(500)
+      }
+    })
+})
+
 router.use(
   ['/channel', '/channels', '/message', '/messages'],
   createProxyMiddleware({

@@ -36,7 +36,6 @@ function ChatPage({ user, logout }) {
   useEffect(() => {
     socket.open()
     socket.on('message', (data) => {
-      console.log({ message: data })
       setMessage((prev) => [...prev, data])
       chatContentDom.current.scrollTo({
         top: chatContentDom.current.scrollHeight,
@@ -45,7 +44,6 @@ function ChatPage({ user, logout }) {
       })
     })
     socket.on('roomData', (data) => {
-      console.log({ roomData: data })
       setCurrentChannel((prev) => ({
         name: data.room,
         members: data.users,
@@ -60,7 +58,6 @@ function ChatPage({ user, logout }) {
 
   useEffect(() => {
     if (currentChannel.name !== '') {
-      console.log({ room: currentChannel.name })
       socket.emit('join', { room: currentChannel.name }, (error) => {
         if (error) {
           console.log(error)
@@ -81,7 +78,6 @@ function ChatPage({ user, logout }) {
         },
       })
       .then((res) => {
-        console.log({ channelList: res.data })
         if (res.data.channels) {
           setChannels(res.data.channels)
         }
@@ -96,7 +92,6 @@ function ChatPage({ user, logout }) {
     return axios
       .get(`/api/internal/account/${userId}`)
       .then((res) => {
-        console.log({ userId, res: res.data })
         return res.data.firstname || 'Unknown'
       })
       .catch((err) => {
@@ -116,7 +111,6 @@ function ChatPage({ user, logout }) {
         },
       })
       .then(async (res) => {
-        console.log({ messageList: res.data })
         if (res.data.messages) {
           const msg = res.data.messages
           for (let i = 0; i < msg.length; i++) {
@@ -163,8 +157,6 @@ function ChatPage({ user, logout }) {
 
   const handleInputKeyPress = (e) => {
     if (e.target.value !== '' && e.key === 'Enter') {
-      const username = user.firstname
-      console.log({ username, room: currentChannel.name, message: e.target.value, channelId: currentChannel.id })
       socket.emit(
         'sendMessage',
         {
@@ -220,20 +212,8 @@ function ChatPage({ user, logout }) {
           },
         })
         .then(async (res) => {
-          console.log(res)
-
           // call sendMsg
-          const username = user.firstname
           const filesize = prettyBytes(file.size)
-          console.log({
-            username,
-            room: currentChannel.name,
-            content: res.data.orginal_filename,
-            type: res.data.type,
-            s3_url: res.data.s3_url,
-            filesize: filesize,
-            channelId: currentChannel.id,
-          })
           socket.emit(
             'sendMessage',
             {

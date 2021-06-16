@@ -12,7 +12,7 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
                 <img
                   src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`}
                   alt=''
-                  style={{ 'background-color': 'white' }}
+                  style={{ backgroundColor: 'white' }}
                 />
                 &nbsp; {sender}
               </div>
@@ -46,7 +46,7 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
                 <img
                   src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`}
                   alt=''
-                  style={{ 'background-color': 'white' }}
+                  style={{ backgroundColor: 'white' }}
                 />
                 &nbsp; {sender}
               </div>
@@ -73,7 +73,7 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
                 <img
                   src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`}
                   alt=''
-                  style={{ 'background-color': 'white' }}
+                  style={{ backgroundColor: 'white' }}
                 />
                 &nbsp; {sender}
               </div>
@@ -95,7 +95,7 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
                 <img
                   src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`}
                   alt=''
-                  style={{ 'background-color': 'white' }}
+                  style={{ backgroundColor: 'white' }}
                 />
                 &nbsp; {sender}
               </div>
@@ -128,7 +128,7 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
                 <img
                   src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`}
                   alt=''
-                  style={{ 'background-color': 'white' }}
+                  style={{ backgroundColor: 'white' }}
                 />
                 &nbsp; {sender}
               </div>
@@ -136,7 +136,7 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
               <br />
               <span style={{ fontSize: 'small' }}>
                 |{' '}
-                <a href={`${s3_url}`} style={{ border: 0 + 'px;' }}>
+                <a href={`${s3_url}`} style={{ border: 0 + 'px' }}>
                   Save
                 </a>{' '}
                 |{' '}
@@ -155,7 +155,7 @@ function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
                 <img
                   src={`https://avatars.dicebear.com/api/identicon/${sender}.svg?mood[]=happy`}
                   alt=''
-                  style={{ 'background-color': 'white' }}
+                  style={{ backgroundColor: 'white' }}
                 />
                 &nbsp; {sender}
               </div>

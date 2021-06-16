@@ -50,7 +50,7 @@ def files():
 
     data = {
         "type": object_type,
-        "s3_url": s3_host + "/sendify-object/" + fid,
+        "s3_url": s3_host + "/" + s3_bucket + "/" + fid,
         "orginal_filename": file.filename
     }
     resp = make_response(data, 200)

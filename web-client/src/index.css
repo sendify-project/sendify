@@ -974,7 +974,7 @@ a:active {
   color: #7c8db5;
 }
 .sidebar-wrapper .menu .sidebar-link span {
-  margin-left: 1rem;
+  margin-left: 0;
 }
 .sidebar-wrapper .menu .sidebar-link:hover {
   background-color: #f0f1f5;
@@ -5391,7 +5391,7 @@ fieldset:disabled .btn {
 .card-body {
   height: 520px;
   flex: 1 1 auto;
-  padding: 1rem;
+  padding: 0.5rem;
 }
 .card-title {
   margin-bottom: 0.5rem;

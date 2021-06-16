@@ -145,6 +145,19 @@ function ChatPage({ user, logout }) {
       })
   }
 
+  const handleDeleteChannel = (id) => {
+    axios
+      .delete('/api/channel/' + id)
+      .then(async (res) => {
+        fetchChannels()
+        setCurrentChannel({ members: [], name: '', id: '' })
+      })
+      .catch((err) => {
+        console.log(err)
+        alert('Something wrong occurs when deleting channel')
+      })
+  }
+
   const handleInputKeyPress = (e) => {
     if (e.target.value !== '' && e.key === 'Enter') {
       const username = user.firstname
@@ -279,6 +292,7 @@ function ChatPage({ user, logout }) {
                   <SidebarItem
                     text={el.name}
                     onClick={() => setCurrentChannel({ members: [], name: el.name, id: el.id })}
+                    onClickDelete={() => handleDeleteChannel(el.id)}
                   />
                 ))}
               </ul>

@@ -1,4 +1,4 @@
-function SidebarItem({ text, onClick }) {
+function SidebarItem({ text, onClick, onClickDelete }) {
   return (
     <li class='sidebar-item'>
       <div class='d-flex ml-4'>
@@ -9,7 +9,7 @@ function SidebarItem({ text, onClick }) {
         </div>
         <div class='sidebar-link'>
           <span>
-            <i class='bi bi-trash-fill'></i>
+            <i class='bi bi-trash-fill' onClick={onClickDelete}></i>
           </span>
         </div>
       </div>

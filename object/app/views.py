@@ -21,6 +21,7 @@ def files():
     secret_key = os.environ.get("SECRET_KEY")
     expire_days = int(os.environ.get("EXPIRE_DAYS", "10"))
     s3_host = os.environ.get("S3_HOST")
+    s3_bucket = os.environ.get("S3_BUCKET")
     print(access_key, secret_key, expire_days, s3_host)
 
     config = Config(signature_version='s3',
@@ -43,7 +44,7 @@ def files():
         content_type = "application/octet-stream"
         object_type = "file"
 
-    response = s3.Bucket('sendify-object').put_object(Key=fid, Body=file, ACL='public-read', Expires=datetime.datetime.today() + datetime.timedelta(days=expire_days), ContentType=content_type).get()  # ['ResponseMetadata']['HTTPStatusCode']
+    response = s3.Bucket(s3_bucket).put_object(Key=fid, Body=file, ACL='public-read', Expires=datetime.datetime.today() + datetime.timedelta(days=expire_days), ContentType=content_type).get()  # ['ResponseMetadata']['HTTPStatusCode']
     if not response:
         make_response("Something went wrong when uploading to s3", 400)
 

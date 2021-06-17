@@ -3,8 +3,8 @@ import { check, group, sleep } from 'k6';
 
 export let options = {
     stages: [
-        { duration: '5m', target: 10000 },
-        { duration: '5m', target: 10000 },
+        { duration: '5m', target: 5000 },
+        { duration: '5m', target: 5000 },
         { duration: '2m', target: 0 },
     ],
 };
@@ -12,7 +12,16 @@ export let options = {
 let isCheck = false
 // let isLogin = false
 
-let access_token_list = ["", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTg5ODQwNzIyMjUwOTYwMDYsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM1MDQzODF9.9FKTdHu92raLJCFHQ88kVmTytqJLWg_HVhm6sBROPco", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTg5ODQwNzM1NjcyNzMyODcsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM1MDQzODJ9.DmUkCWaQQSrqJmg6Xwzo-0Fifwz0UPgzuOIC1WU6oZs", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTg5ODQwNzQ3NTg0NTU2MjIsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM1MDQzODN9.zmTSgLpKKnrXbM6x_jjzPKM_bmDs1bDtD6lygCTCYWI", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTg5ODQwNzU5MTYwODM1MjcsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM1MDQzODN9.NMhi8bAL0fqw0atOg21bLxr7ERz4MOK4Yv68gO7w2Iw", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTg5ODQwNzc0MDkyNTU3NTAsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM1MDQzODR9.GhJKqmZaS1-54_z12IL82owyx2akjIdK8tZn9jXdbqA", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTg5ODQwNzg2MDA0MzgwODcsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM1MDQzODV9.9Llj7-lI3tqvXcWMV_sTD42dlcZPCQVsv4OyqDcczFc", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTg5ODQwODAxMTAzODc1MjYsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM1MDQzODZ9.DWkMcg7vbICM7-3qeAjnM3Sv9JcoUvlOcFeJDBZPaXk", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTg5ODQwODExODQxMjkzNTEsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM1MDQzODZ9.58WedXXlRe1I4Aht5npT0LGOcsUgs-NKZTp5bXW3rAw", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTg5ODQwODI0OTI3NTIxOTgsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM1MDQzODd9._41nOhpnuwKX-_NSboww1PM3_K3hChNfWdwwCx6XuI4", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTg5ODQwODM4MzQ5Mjk0NzksIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM1MDQzODh9.fI6lS5-O_7Qp8CLAmH0spawc1RM5Djnm6Dxb3uTqXzQ"];
+let access_token_list = ['', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTk1NjQ1ODUxODg5ODMzMTUsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM4NjU1Nzh9.00obybsAFp4u5nxCjJydZ780hlwDKbehy57COE_jsOo',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTk1NjQ1ODgwMjQzMzI4MTksIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM4NjU1Nzl9.9NAchQbSpD3uCeeyhPnS4zhXb82c9zWdgLiiC1caMRg',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTk1NjQ1OTEwNjEwMDg5MTUsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM4NjU1ODF9.d8fpbhoP3lEqBwceYkWrgfFnzRLhxz8sJIePuwM8rqs',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTk1NjQ1OTM4Nzk1ODEyMDMsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM4NjU1ODJ9.QctyBQQ4hnlBA3H2GtZV7ZZBzrOoNlRYuolkKlBNSSA',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTk1NjQ1OTY3NjUyNjIzNTUsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM4NjU1ODN9.ha7VZBlOP-bH_xZCMXjJaKVpTGgk3TrD9azSuITEESo',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTk1NjQ1OTk2MDA2MTE4NTksIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM4NjU1ODR9.kjghdRQhk5KywVAXtcksYgvduAXwY1TR09ewpSK7aVg',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTk1NjQ2MDI0MzU5NjEzNjMsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM4NjU1ODZ9.NmENmLIhUhUbwaPKolEAQBxGYEF0V7L2pqlZ3ka0NT4',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTk1NjQ2MDUzMDQ4NjUyOTksIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM4NjU1ODd9.XhA6LMbiThXeaaTm97P8a-i6uiUnEVKV1EE5GyyF3ig',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTk1NjQ2MDgxNTY5OTIwMTksIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM4NjU1ODh9.Fs4uBbXG422u-_6ag9CEc0i6SUFeujf1F4JNYOsJZf0',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjozNTk1NjQ2MTEwMjU4OTU5NTUsIlJlZnJlc2giOmZhbHNlLCJleHAiOjE2MjM4NjU1ODl9.VKkD9tt3vakSFqlg0PRnyGb6vR8YIl5uaew8-dUVUk0']
 
 export default function () {
     group('account', () => {
@@ -20,7 +29,7 @@ export default function () {
             let auth = {
                 Authorization: "Bearer " + access_token_list[__VU % 10]
             };
-            let accountRes = http.get(`https://sendify-beta.csie.org/api/account`, { headers: auth });
+            let accountRes = http.get(`https://sample.csie.org/api/account`, { headers: auth });
             isCheck = true
             console.log(__VU, accountRes['body'])
             check(accountRes, { 'check account successfully': (resp) => resp.json('email') !== undefined });

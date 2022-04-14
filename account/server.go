@@ -41,6 +41,11 @@ func NewServer(config *Config, engine *gin.Engine, router *Router, jwtAuthChecke
 func (s *Server) RegisterRoutes() {
 	apiGroup := s.Engine.Group("/api/account")
 	{
+		forwardAuthGroup := apiGroup.Group("/forwardauth")
+		forwardAuthGroup.Use(s.jwtAuthChecker.JWTAuth())
+		{
+			forwardAuthGroup.Any("", s.Router.Auth)
+		}
 		authGroup := apiGroup.Group("/auth")
 		{
 			authGroup.POST("/signup", s.Router.SignUp)

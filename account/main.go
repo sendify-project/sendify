@@ -7,15 +7,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minghsu0107/saga-account/infra/cache"
-	"github.com/minghsu0107/sendify/account/dep"
 	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	errs := make(chan error, 1)
-
-	migrator, err := dep.InitializeMigrator()
+	migrator, err := InitializeMigrator()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -23,14 +19,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	server, err := dep.InitializeServer()
+	server, err := InitializeServer()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer cache.RedisClient.Close()
 
 	go func() {
-		errs <- server.Run()
+		if err := server.Run(); err != nil {
+			log.Fatal(err)
+		}
 	}()
 
 	// catch shutdown
@@ -45,11 +42,6 @@ func main() {
 		defer cancel()
 		server.GracefulStop(ctx, done)
 	}()
-
-	err = <-errs
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// wait for graceful shutdown
 	<-done

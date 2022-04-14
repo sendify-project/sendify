@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"strings"
 
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
@@ -14,8 +13,6 @@ type HTTPContextKey string
 var (
 	// JWTAuthHeader is the auth header containing customer ID
 	JWTAuthHeader = "Authorization"
-	// InvalidationTopic is the cache invalidation topic
-	InvalidationTopic = join("invalidate_cache:", "account")
 	// CustomerKey is the key name for retrieving jwt-decoded customer id in a http request context
 	CustomerKey HTTPContextKey = "customer_key"
 )
@@ -75,12 +72,4 @@ func readEnv(config *Config) error {
 		return err
 	}
 	return nil
-}
-
-func join(strs ...string) string {
-	var sb strings.Builder
-	for _, str := range strs {
-		sb.WriteString(str)
-	}
-	return sb.String()
 }

@@ -2,13 +2,14 @@ import React, { useState } from 'react'
 import { Modal } from 'reactstrap'
 function ModalItem({ s3_url }) {
   const [modal, setModal] = useState(false)
-  const toggle = (e) => {
+
+  const toggle = () => {
     setModal(!modal)
   }
 
   return (
     <div class='myModal'>
-      <a type='button' style={{ border: 0 + 'px' }}>
+      <a type='button' style={{ border: '0px' }}>
         <img src={s3_url} onClick={toggle} style={{ maxWidth: 250 + 'px', backgroundColor: '#fafbfb' }} />
       </a>
       <Modal isOpen={modal} toggle={toggle} centered class='modal fade' size='lg'>

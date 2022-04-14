@@ -1,0 +1,140 @@
+version: '3'
+services:
+  reverse-proxy:
+    image: traefik:v2.3
+    command:
+      - "--entryPoints.web.address=:80"
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - --tracing=true
+      - --tracing.jaeger=true
+      - --tracing.jaeger.collector.endpoint=http://jaeger:14268/api/traces?format=jaeger.thrift
+      - --tracing.jaeger.traceContextHeaderName=uber-trace-id
+      - --tracing.jaeger.gen128Bit
+      - --tracing.jaeger.samplingParam=1.0
+      - --accesslog=true # output log to stdout
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  accountdb:
+    image: mysql:8.0
+    environment:
+      MYSQL_USER: ming
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: account
+    command:
+      - mysqld
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --lower_case_table_names=1
+      - --max_allowed_packet=128M
+      - --max-connections=10000 # default: 151
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data_account:/var/lib/mysql
+  minio:
+    image: minio/minio:RELEASE.2021-03-17T02-33-02Z@sha256:d33b2e9559ee59acf7591cd83cb7238837158a316956e6140e6692a8e4e12fe9
+    volumes:
+      - minio_data:/export
+    command: server /export
+    environment:
+      MINIO_ACCESS_KEY: testaccesskey
+      MINIO_SECRET_KEY: testsecret
+    ports:
+      - "9000:9000"
+  createbucket:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 testaccesskey testsecret;
+      /usr/bin/mc mb myminio/sendifybucket;
+      /usr/bin/mc policy set public myminio/sendifybucket;
+      exit 0;
+      "
+  redis-node1:
+    build:
+      context: redis
+    ports:
+      - 6380:6380
+      - 16380:16380
+    restart: always
+    volumes:
+      - redis-node1-data:/data
+    entrypoint: [redis-server, /etc/redis/rediscluster.conf, --port,"6380", --cluster-announce-ip,"${REDIS_CLUSTER_IP}"]
+  redis-node2:
+    build:
+      context: redis
+    ports:
+      - 6381:6381
+      - 16381:16381
+    restart: always
+    volumes:
+      - redis-node2-data:/data
+    entrypoint: [redis-server, /etc/redis/rediscluster.conf,--port,"6381",--cluster-announce-ip,"${REDIS_CLUSTER_IP}"]
+  redis-node3:
+    build:
+      context: redis
+    ports:
+      - 6382:6382
+      - 16382:16382
+    restart: always
+    volumes:
+      - redis-node3-data:/data
+    entrypoint: [redis-server, /etc/redis/rediscluster.conf,--port,"6382",--cluster-announce-ip,"${REDIS_CLUSTER_IP}"]
+  redis-node4:
+    build:
+      context: redis
+    ports:
+      - 6383:6383
+      - 16383:16383
+    restart: always
+    volumes:
+      - redis-node4-data:/data
+    entrypoint: [redis-server, /etc/redis/rediscluster.conf,--port,"6383",--cluster-announce-ip,"${REDIS_CLUSTER_IP}"]
+  redis-node5:
+    build:
+      context: redis
+    ports:
+      - 6384:6384
+      - 16384:16384
+    restart: always
+    volumes:
+      - redis-node5-data:/data
+    entrypoint: [redis-server, /etc/redis/rediscluster.conf,--port,"6384",--cluster-announce-ip,"${REDIS_CLUSTER_IP}"]
+  redis-node6:
+    build:
+      context: redis
+    ports:
+      - 6385:6385
+      - 16385:16385
+    restart: always
+    volumes:
+      - redis-node6-data:/data
+    entrypoint: [redis-server, /etc/redis/rediscluster.conf,--port,"6385",--cluster-announce-ip,"${REDIS_CLUSTER_IP}"]
+  redis-cluster-creator:
+    image: redis:6.2.6
+    entrypoint: [/bin/sh,-c,'echo "yes" | redis-cli -a ${REDIS_PASSWORD} --cluster create ${REDIS_CLUSTER_IP}:6380 ${REDIS_CLUSTER_IP}:6381 ${REDIS_CLUSTER_IP}:6382 ${REDIS_CLUSTER_IP}:6383 ${REDIS_CLUSTER_IP}:6384 ${REDIS_CLUSTER_IP}:6385 --cluster-replicas 1']
+    depends_on:
+      - redis-node1
+      - redis-node2
+      - redis-node3
+      - redis-node4
+      - redis-node5
+      - redis-node6
+volumes:
+  mysql_data_account:
+  minio_data:
+  redis-node1-data:
+  redis-node2-data:
+  redis-node3-data:
+  redis-node4-data:
+  redis-node5-data:
+  redis-node6-data:

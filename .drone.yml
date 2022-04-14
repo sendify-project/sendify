@@ -86,23 +86,13 @@ steps:
     - clone
   when:
     event: push
-- name: server-push-registry
-  <<: *x-build-docker-image
-  settings:
-    repo: minghsu0107/sendify-web-server
-    dockerfile: ./web-server/dockerfile
-    context: ./web-server
-  depends_on:
-    - clone
-  when:
-    event: push
 - name: web-update-manifests
   pull: if-not-exists
   image: minghsu0107/update-kustomization:v1.0.3
   environment:
     SSH_KEY:
       from_secret: ssh_key
-    IMAGES: minghsu0107/sendify-web-client,minghsu0107/sendify-web-server
+    IMAGES: minghsu0107/sendify-web-client
     IMAGE_TAG: ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}
     MANIFEST_HOST: github.com
     MANIFEST_USER: minghsu0107

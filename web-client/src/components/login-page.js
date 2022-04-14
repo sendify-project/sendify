@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 function LoginPage({ setUser, getUserInfo, logout }) {
   const [email, setEmail] = useState('')
   const [passwd, setPasswd] = useState('')
-  const history = useHistory()
+  const navigate = useNavigate()
 
-  const handleClick = (e) => {
+  const handleClick = () => {
     axios
       .post('/api/login', { email, password: passwd })
       .then(async (res) => {
@@ -19,20 +19,20 @@ function LoginPage({ setUser, getUserInfo, logout }) {
             user = await getUserInfo(accessToken)
             if (!user.firstname || !user.lastname) {
               alert('get uesr info error')
-              return history.push('/login')
+              return navigate('/login')
             }
           } catch (err) {
             console.log(err)
             logout()
             alert('get uesr info error')
-            return history.push('/login')
+            return navigate('/login')
           }
           localStorage.setItem('access_token', accessToken)
           localStorage.setItem('firstname', user.firstname)
           localStorage.setItem('lastname', user.lastname)
           localStorage.setItem('user_id', user.id)
           setUser((prev) => ({ ...prev, ...user, userId: user.id, accessToken: accessToken, isLogin: true }))
-          history.push('/chat')
+          navigate('/chat')
         } else {
           alert('Login fail')
         }
@@ -89,13 +89,13 @@ function LoginPage({ setUser, getUserInfo, logout }) {
             <div className='text-center mt-5 text-lg fs-4'>
               <p className='text-gray-600'>
                 Don't have an account?{' '}
-                <Link to='signup' className='font-bold'>
+                <Link to='/signup' className='font-bold'>
                   Sign up
                 </Link>
                 .
               </p>
               <p>
-                <Link to='forgot-password' className='font-bold'>
+                <Link to='/forgot-password' className='font-bold'>
                   Forgot password?
                 </Link>
                 .

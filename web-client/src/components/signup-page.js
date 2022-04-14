@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-function SignupPage({ setUser, getUserInfo, logout }) {
+function SignupPage() {
   const [email, setEmail] = useState('')
   const [passwd, setPasswd] = useState('')
   const [confirmPasswd, setConfirmPasswd] = useState('')
   const [firstname, setFirstName] = useState('')
   const [lastname, setLastName] = useState('')
   const [phone, setPhone] = useState('')
-  const history = useHistory()
+  const navigate = useNavigate()
 
-  const handleClick = (e) => {
+  const handleClick = () => {
     if (passwd.length < 8) {
       alert('Length of password must be > 8')
       return
@@ -21,7 +21,7 @@ function SignupPage({ setUser, getUserInfo, logout }) {
       .then(async (res) => {
         if (res.data.access_token) {
           alert('sign up success')
-          history.push('/login')
+          navigate.push('/login')
         } else {
           alert('Sign up fail')
         }
@@ -131,7 +131,7 @@ function SignupPage({ setUser, getUserInfo, logout }) {
             <div className='text-center mt-5 text-lg fs-4'>
               <p className='text-gray-600'>
                 Already have an account?{' '}
-                <Link to='login' className='font-bold'>
+                <Link to='/login' className='font-bold'>
                   Log in
                 </Link>
               </p>

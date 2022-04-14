@@ -7,12 +7,6 @@ services:
       - "--api.insecure=true"
       - "--providers.docker"
       - "--providers.docker.exposedbydefault=false"
-      - --tracing=true
-      - --tracing.jaeger=true
-      - --tracing.jaeger.collector.endpoint=http://jaeger:14268/api/traces?format=jaeger.thrift
-      - --tracing.jaeger.traceContextHeaderName=uber-trace-id
-      - --tracing.jaeger.gen128Bit
-      - --tracing.jaeger.samplingParam=1.0
       - --accesslog=true # output log to stdout
     ports:
       - "80:80"
@@ -59,9 +53,22 @@ services:
       /usr/bin/mc policy set public myminio/sendifybucket;
       exit 0;
       "
+  cassandra:
+    image: docker.io/bitnami/cassandra:3-debian-10
+    ports:
+      - 7000:7000
+      - 9042:9042
+    volumes:
+      - cassandra_data:/bitnami
+      - ./api-store/scripts:/docker-entrypoint-initdb.d
+    environment:
+      - CASSANDRA_SEEDS=cassandra
+      - CASSANDRA_PASSWORD_SEEDER=yes
+      - CASSANDRA_USER=cassandra
+      - CASSANDRA_PASSWORD=cassandra
   redis-node1:
     build:
-      context: redis
+      context: deployments/redis
     ports:
       - 6380:6380
       - 16380:16380
@@ -71,7 +78,7 @@ services:
     entrypoint: [redis-server, /etc/redis/rediscluster.conf, --port,"6380", --cluster-announce-ip,"${REDIS_CLUSTER_IP}"]
   redis-node2:
     build:
-      context: redis
+      context: deployments/redis
     ports:
       - 6381:6381
       - 16381:16381
@@ -81,7 +88,7 @@ services:
     entrypoint: [redis-server, /etc/redis/rediscluster.conf,--port,"6381",--cluster-announce-ip,"${REDIS_CLUSTER_IP}"]
   redis-node3:
     build:
-      context: redis
+      context: deployments/redis
     ports:
       - 6382:6382
       - 16382:16382
@@ -91,7 +98,7 @@ services:
     entrypoint: [redis-server, /etc/redis/rediscluster.conf,--port,"6382",--cluster-announce-ip,"${REDIS_CLUSTER_IP}"]
   redis-node4:
     build:
-      context: redis
+      context: deployments/redis
     ports:
       - 6383:6383
       - 16383:16383
@@ -101,7 +108,7 @@ services:
     entrypoint: [redis-server, /etc/redis/rediscluster.conf,--port,"6383",--cluster-announce-ip,"${REDIS_CLUSTER_IP}"]
   redis-node5:
     build:
-      context: redis
+      context: deployments/redis
     ports:
       - 6384:6384
       - 16384:16384
@@ -111,7 +118,7 @@ services:
     entrypoint: [redis-server, /etc/redis/rediscluster.conf,--port,"6384",--cluster-announce-ip,"${REDIS_CLUSTER_IP}"]
   redis-node6:
     build:
-      context: redis
+      context: deployments/redis
     ports:
       - 6385:6385
       - 16385:16385

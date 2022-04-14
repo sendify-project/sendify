@@ -1,7 +1,6 @@
-import ModalItem from '../components/modal-item'
+import ModalItem from './modal-item'
 
 function ChatItem({ content, type, s3_url, time, sender, left, filesize }) {
-  // console.log(text, type, s3_url, time, sender, left, filesize)
   if (left) {
     if (type === 'file') {
       return (

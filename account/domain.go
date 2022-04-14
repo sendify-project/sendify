@@ -35,6 +35,11 @@ type CustomerPersonalInfo struct {
 	Email     string `json:"email" binding:"required,email"`
 }
 
+type CustomerName struct {
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+}
+
 // SignUpCustomer request payload
 type SignUpCustomer struct {
 	Password    string `json:"password" binding:"required,min=8,max=128"`

@@ -17,7 +17,14 @@ function SignupPage() {
       return
     }
     axios
-      .post('/api/signup', { email, password: passwd, firstname, lastname, address: 'taipei', phone_number: phone })
+      .post('/api/account/auth/signup', {
+        email,
+        password: passwd,
+        firstname,
+        lastname,
+        address: 'taipei',
+        phone_number: phone,
+      })
       .then(async (res) => {
         if (res.data.access_token) {
           alert('sign up success')

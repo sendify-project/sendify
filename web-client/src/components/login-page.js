@@ -9,7 +9,7 @@ function LoginPage({ setUser, getUserInfo, logout }) {
 
   const handleClick = () => {
     axios
-      .post('/api/login', { email, password: passwd })
+      .post('/api/account/auth/login', { email, password: passwd })
       .then(async (res) => {
         const accessToken = res.data.access_token
         if (accessToken) {

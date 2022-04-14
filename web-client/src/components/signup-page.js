@@ -8,7 +8,6 @@ function SignupPage() {
   const [confirmPasswd, setConfirmPasswd] = useState('')
   const [firstname, setFirstName] = useState('')
   const [lastname, setLastName] = useState('')
-  const [phone, setPhone] = useState('')
   const navigate = useNavigate()
 
   const handleClick = () => {
@@ -17,11 +16,16 @@ function SignupPage() {
       return
     }
     axios
-      .post('/api/signup', { email, password: passwd, firstname, lastname, address: 'taipei', phone_number: phone })
+      .post('/api/account/auth/signup', {
+        email,
+        password: passwd,
+        firstname,
+        lastname,
+      })
       .then(async (res) => {
         if (res.data.access_token) {
           alert('sign up success')
-          navigate.push('/login')
+          navigate('/login')
         } else {
           alert('Sign up fail')
         }
@@ -80,18 +84,6 @@ function SignupPage() {
             </div>
             <div className='form-group position-relative has-icon-left mb-4'>
               <input
-                type='text'
-                className='form-control form-control-xl'
-                placeholder='Phone Number'
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-              <div className='form-control-icon'>
-                <i className='bi bi-phone'></i>
-              </div>
-            </div>
-            <div className='form-group position-relative has-icon-left mb-4'>
-              <input
                 type='password'
                 className='form-control form-control-xl'
                 placeholder='Password'
@@ -118,12 +110,7 @@ function SignupPage() {
               className='btn btn-primary btn-block btn-lg shadow-lg mt-5'
               onClick={handleClick}
               disabled={
-                email === '' ||
-                firstname === '' ||
-                lastname === '' ||
-                phone === '' ||
-                passwd === '' ||
-                passwd !== confirmPasswd
+                email === '' || firstname === '' || lastname === '' || passwd === '' || passwd !== confirmPasswd
               }
             >
               Sign Up

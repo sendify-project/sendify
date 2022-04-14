@@ -89,7 +89,7 @@ function ChatPage({ user, logout }) {
 
   const fetchUsernameById = async (userId) => {
     return axios
-      .get(`/api/internal/account/${userId}`)
+      .get(`/api/account/name/${userId}`)
       .then((res) => {
         return res.data.firstname || 'Unknown'
       })

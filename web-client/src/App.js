@@ -11,14 +11,13 @@ function App() {
     accessToken: '',
     firstname: '',
     lastname: '',
-    phone: '',
     userId: '',
     isLogin: false,
   })
   const navigate = useNavigate()
 
   const logout = () => {
-    setUser({ name: '', accessToken: '', firstname: '', lastname: '', phone: '', userId: undefined, isLogin: false })
+    setUser({ name: '', accessToken: '', firstname: '', lastname: '', userId: undefined, isLogin: false })
     localStorage.removeItem('access_token')
     navigate('/login')
   }

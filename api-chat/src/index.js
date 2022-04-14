@@ -3,11 +3,10 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const axios = require('axios')
-const JSONbig = require('json-bigint')
 const Filter = require('bad-words')
 const redisAdapter = require('@socket.io/redis-adapter')
 const redis = require('./utils/redis')
-const { generateMessage, generateLocationMessage } = require('./utils/messages')
+const { generateMessage } = require('./utils/messages')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
 
 if (process.env.NODE_ENV !== 'production') require('dotenv').config()
@@ -59,8 +58,6 @@ nsp.on('connection', (socket) => {
     socket.join(user.room)
     console.log('A new user joined' + JSON.stringify(user))
 
-    // socket.emit('message', generateMessage('Admin', 'Welcome!'))
-    // socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined!`))
     nsp.to(user.room).emit('roomData', {
       room: user.room,
       users: getUsersInRoom(user.room),
@@ -70,7 +67,6 @@ nsp.on('connection', (socket) => {
   })
 
   socket.on('sendMessage', ({ content, type, s3_url, filesize, room, channelId }, callback) => {
-    // const user = getUser(socket.id)
     const filter = new Filter()
 
     if (filter.isProfane(content)) {
@@ -81,9 +77,9 @@ nsp.on('connection', (socket) => {
       channel_id: BigInt(channelId),
       user_id: BigInt(userId),
       type: type,
-      content: content
+      content: content,
     }
-    if (type === "file" || type === "img") {
+    if (type === 'file' || type === 'img') {
       data.content = `${s3_url}#${data.content}#${filesize}`
     }
     console.log(toJson(data))
@@ -95,7 +91,6 @@ nsp.on('connection', (socket) => {
           throw new Error(res.data.msg)
         } else {
           console.log(`A user "${username}" send message: "${content}" from room ${room}`)
-          // nsp.to(room).emit('message', generateMessage(channelId, userId, username, message))
           nsp.to(room).emit('message', generateMessage(channelId, userId, username, content, type, s3_url, filesize))
           callback()
         }
@@ -111,7 +106,6 @@ nsp.on('connection', (socket) => {
     const user = removeUser(socket.id)
 
     if (user) {
-      // nsp.to(user.room).emit('message', generateMessage('Admin', `${user.username} has left!`))
       nsp.to(user.room).emit('roomData', {
         room: user.room,
         users: getUsersInRoom(user.room),

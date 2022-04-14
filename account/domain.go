@@ -42,11 +42,10 @@ type CustomerName struct {
 
 // SignUpCustomer request payload
 type SignUpCustomer struct {
-	Password    string `json:"password" binding:"required,min=8,max=128"`
-	FirstName   string `json:"firstname" binding:"required"`
-	LastName    string `json:"lastname" binding:"required"`
-	Email       string `json:"email" binding:"required,email"`
-	PhoneNumber string `json:"phone_number" binding:"required"`
+	Password  string `json:"password" binding:"required,min=8,max=128"`
+	FirstName string `json:"firstname" binding:"required"`
+	LastName  string `json:"lastname" binding:"required"`
+	Email     string `json:"email" binding:"required,email"`
 }
 
 // LoginCustomer request payload

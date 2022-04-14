@@ -103,7 +103,7 @@ func (repo *JWTAuthRepositoryImpl) CheckCustomer(ctx context.Context, customerID
 }
 
 // CreateCustomer creates a new customer
-// it returns error if ID, email, or phone number duplicates
+// it returns error if ID or email duplicates
 func (repo *JWTAuthRepositoryImpl) CreateCustomer(ctx context.Context, customer *Customer) error {
 	bcryptedPassword, err := HashPassword(customer.Password)
 	if err != nil {

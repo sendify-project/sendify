@@ -35,6 +35,13 @@ type CustomerPersonalInfo struct {
 	Email     string `json:"email" binding:"required,email"`
 }
 
+type CustomerPersonalInfoWithId struct {
+	ID        uint64 `json:"id"`
+	FirstName string `json:"firstname" binding:"required"`
+	LastName  string `json:"lastname" binding:"required"`
+	Email     string `json:"email" binding:"required,email"`
+}
+
 type CustomerName struct {
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`

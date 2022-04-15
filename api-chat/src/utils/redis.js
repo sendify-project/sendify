@@ -5,7 +5,6 @@ const REDIS_ENDPOINT = process.env.REDIS_ENDPOINT
 const REDIS_PASSWORD = process.env.REDIS_PASSWORD
 
 if (!REDIS_ENDPOINT) throw new Error('REDIS_ENDPOINT is not found!')
-console.log({ REDIS_ENDPOINT, REDIS_PASSWORD })
 
 const startupNodes = [
   {

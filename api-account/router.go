@@ -145,8 +145,7 @@ func (r *Router) Auth(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-// GetCustomerPersonalInfo gets customer personal info
-func (r *Router) GetCustomerPersonalInfo(c *gin.Context) {
+func (r *Router) GetCustomerPersonalInfoWithId(c *gin.Context) {
 	customerID, ok := c.Request.Context().Value(CustomerKey).(uint64)
 	if !ok {
 		response(c, http.StatusUnauthorized, ErrUnauthorized)
@@ -157,7 +156,8 @@ func (r *Router) GetCustomerPersonalInfo(c *gin.Context) {
 	case ErrCustomerNotFound:
 		response(c, http.StatusNotFound, ErrCustomerNotFound)
 	case nil:
-		c.JSON(http.StatusOK, &CustomerPersonalInfo{
+		c.JSON(http.StatusOK, &CustomerPersonalInfoWithId{
+			ID:        customerID,
 			FirstName: personalInfo.FirstName,
 			LastName:  personalInfo.LastName,
 			Email:     personalInfo.Email,
@@ -192,7 +192,6 @@ func (r *Router) GetCustomerName(c *gin.Context) {
 	}
 }
 
-// UpdateCustomerPersonalInfo updates customer personal info
 func (r *Router) UpdateCustomerPersonalInfo(c *gin.Context) {
 	var personalInfo CustomerPersonalInfo
 	if err := c.ShouldBindJSON(&personalInfo); err != nil {

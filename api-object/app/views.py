@@ -7,7 +7,7 @@ import datetime
 import PIL.Image as Image
 import os
 
-upload = Blueprint('upload', __name__, url_prefix='/')
+upload = Blueprint('upload', __name__, url_prefix='/api')
 
 
 @upload.route('/upload', methods=["POST"])
@@ -22,7 +22,6 @@ def files():
     expire_days = int(os.environ.get("EXPIRE_DAYS", "10"))
     s3_host = os.environ.get("S3_HOST")
     s3_bucket = os.environ.get("S3_BUCKET")
-    print(access_key, secret_key, expire_days, s3_host)
 
     config = Config(signature_version='s3',
                     s3={'addressing_style': 'path'})

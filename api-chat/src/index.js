@@ -22,15 +22,10 @@ const io = socketio(server, {
 
 io.adapter(redisAdapter(redis.pub, redis.sub))
 
-const nsp = io.of('/sendify')
+const nsp = io.of('/api/chat')
 const port = process.env.PORT || 3000
-const publicDirectoryPath = path.join(__dirname, '../public')
-
-app.use(express.static(publicDirectoryPath))
 
 nsp.on('connection', (socket) => {
-  console.log('New WebSocket connection')
-  console.log(socket.request.headers)
   const userId = socket.request.headers['x-user-id']
   const username = socket.request.headers['x-username']
 
@@ -41,13 +36,10 @@ nsp.on('connection', (socket) => {
       username,
       room: options.room,
     }
-    console.log({ user })
 
     try {
       const { originRoom } = addUser(user)
-      console.log({ originRoom })
       if (originRoom) {
-        console.log(`${username} leave room ${originRoom}`)
         socket.leave(originRoom)
       }
     } catch (err) {
@@ -56,7 +48,6 @@ nsp.on('connection', (socket) => {
     }
 
     socket.join(user.room)
-    console.log('A new user joined' + JSON.stringify(user))
 
     nsp.to(user.room).emit('roomData', {
       room: user.room,
@@ -82,15 +73,12 @@ nsp.on('connection', (socket) => {
     if (type === 'file' || type === 'img') {
       data.content = `${s3_url}#${data.content}#${filesize}`
     }
-    console.log(toJson(data))
     axios
       .post(`${STORE_API}/api/message`, toJson(data))
       .then((res) => {
-        console.log(res.data)
         if (res.data.msg !== 'ok') {
           throw new Error(res.data.msg)
         } else {
-          console.log(`A user "${username}" send message: "${content}" from room ${room}`)
           nsp.to(room).emit('message', generateMessage(channelId, userId, username, content, type, s3_url, filesize))
           callback()
         }
@@ -102,7 +90,6 @@ nsp.on('connection', (socket) => {
   })
 
   socket.on('disconnect', () => {
-    console.log('A user disconnected')
     const user = removeUser(socket.id)
 
     if (user) {

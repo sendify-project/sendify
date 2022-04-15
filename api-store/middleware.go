@@ -2,15 +2,10 @@ package main
 
 import (
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-)
-
-const (
-	TraceIDHeader = "X-B3-TraceId"
 )
 
 // CORSMiddleware adds CORS headers to each response
@@ -43,17 +38,13 @@ func LogMiddleware(logger *log.Entry) gin.HandlerFunc {
 		// Stop timer
 		duration := GetDurationInMillseconds(start)
 
-		traceID := c.Request.Header.Get(TraceIDHeader)
-
 		entry := logger.WithFields(log.Fields{
 			"type":         "router",
-			"client_ip":    GetClientIP(c),
 			"duration(ms)": duration,
 			"method":       c.Request.Method,
 			"path":         c.Request.RequestURI,
 			"status":       c.Writer.Status(),
 			"referrer":     c.Request.Referer(),
-			"traceID":      traceID,
 		})
 
 		if c.Writer.Status() >= 500 {
@@ -62,28 +53,6 @@ func LogMiddleware(logger *log.Entry) gin.HandlerFunc {
 			entry.Info("")
 		}
 	}
-}
-
-// GetClientIP gets the correct IP for the end client instead of the proxy
-func GetClientIP(c *gin.Context) string {
-	// first check the X-Forwarded-For header
-	requester := c.Request.Header.Get("X-Forwarded-For")
-	// if empty, check the Real-IP header
-	if len(requester) == 0 {
-		requester = c.Request.Header.Get("X-Real-IP")
-	}
-	// if the requester is still empty, use the hard-coded address from the socket
-	if len(requester) == 0 {
-		requester = c.Request.RemoteAddr
-	}
-
-	// if requester is a comma delimited list, take the first one
-	// (this happens when proxied via elastic load balancer then again through nginx)
-	if strings.Contains(requester, ",") {
-		requester = strings.Split(requester, ",")[0]
-	}
-
-	return requester
 }
 
 // GetDurationInMillseconds takes a start time and returns a duration in milliseconds

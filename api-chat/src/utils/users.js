@@ -17,7 +17,6 @@ const addUser = ({ id, userId, username, room }) => {
 
   if (index > -1) {
     const existingUser = users[index]
-    console.log({ existingUser })
     const originRoom = users[index].room
     existingUser.room = room
     return { user: { ...existingUser }, originRoom }

@@ -56,7 +56,7 @@ func (s *Server) RegisterRoutes() {
 		withJWT := apiGroup.Group("/info")
 		withJWT.Use(s.jwtAuthChecker.JWTAuth())
 		{
-			withJWT.GET("/person", s.Router.GetCustomerPersonalInfo)
+			withJWT.GET("/person", s.Router.GetCustomerPersonalInfoWithId)
 			withJWT.PUT("/person", s.Router.UpdateCustomerPersonalInfo)
 		}
 	}

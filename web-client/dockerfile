@@ -1,4 +1,4 @@
-FROM node:15.14 AS build-stage
+FROM node:16 AS build-stage
 COPY . /app
 WORKDIR /app
 RUN yarn install --production && yarn build

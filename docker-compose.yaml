@@ -2,6 +2,7 @@ version: '3'
 services:
   reverse-proxy:
     image: traefik:v2.3
+    restart: always
     command:
       - "--entryPoints.web.address=:80"
       - "--api.insecure=true"
@@ -13,8 +14,81 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+  api-account:
+    image: minghsu0107/sendify-api-account:latest
+    restart: always
+    environment:
+      HTTP_PORT: "80"
+      DB_DSN: "ming:password@tcp(accountdb:3306)/account?charset=utf8mb4&parseTime=True&loc=Local"
+      JWT_ACCESS_TOKEN_EXPIRE_SECOND: "300"
+      JWT_REFRESH_TOKEN_EXPIRE_SECOND: "86400"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-account.rule=PathPrefix(`/api/account`)"
+      - "traefik.http.routers.api-account.entrypoints=web"
+      - "traefik.http.routers.api-account.service=api-account"
+      - "traefik.http.services.api-account.loadbalancer.server.port=80"
+  api-chat:
+    image: minghsu0107/sendify-api-chat:latest
+    restart: always
+    environment:
+      PORT: "3000"
+      REDIS_ENDPOINT: redis-node1:6380
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      STORE_API: http://api-store
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-chat.rule=PathPrefix(`/api/chat`) || PathPrefix(`/socket.io`)"
+      - "traefik.http.routers.api-chat.entrypoints=web"
+      - "traefik.http.routers.api-chat.service=api-chat"
+      - "traefik.http.services.api-chat.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.sendify-auth.forwardauth.address=http://api-account/api/account/forwardauth"
+      - "traefik.http.middlewares.sendify-auth.forwardauth.authResponseHeaders=X-User-Id, X-Username"
+  api-object:
+    image: minghsu0107/sendify-api-object:latest
+    restart: always
+    environment:
+      PORT: "5000"
+      ACCESS_KEY: testaccesskey
+      SECRET_KEY: testsecret
+      EXPIRE_DAYS: "10"
+      S3_HOST: http://minio:9000
+      S3_BUCKET: sendifybucket
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-object.rule=PathPrefix(`/api/upload`)"
+      - "traefik.http.routers.api-object.entrypoints=web"
+      - "traefik.http.routers.api-object.service=api-object"
+      - "traefik.http.services.api-object.loadbalancer.server.port=5000"
+      - "traefik.http.middlewares.sendify-auth.forwardauth.address=http://api-account/api/account/forwardauth"
+      - "traefik.http.middlewares.sendify-auth.forwardauth.authResponseHeaders=X-User-Id, X-Username"
+  api-store:
+    image: minghsu0107/sendify-api-store:latest
+    restart: always
+    environment:
+      HTTP_PORT: "80"
+      GIN_MODE: debug
+      CASSANDRA_HOST: cassandra
+      CASSANDRA_USER: cassandra
+      CASSANDRA_PASSWORD: cassandra
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-store.rule=PathPrefix(`/api/channel`) || PathPrefix(`/api/channels`) || PathPrefix(`/api/messages`)"
+      - "traefik.http.routers.api-store.entrypoints=web"
+      - "traefik.http.routers.api-store.service=api-store"
+      - "traefik.http.services.api-store.loadbalancer.server.port=80"
+  web-client:
+    image: minghsu0107/sendify-web-client:latest
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web-client.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.web-client.entrypoints=web"
+      - "traefik.http.routers.web-client.service=web-client"
+      - "traefik.http.services.web-client.loadbalancer.server.port=80"
   accountdb:
     image: mysql:8.0
+    restart: always
     environment:
       MYSQL_USER: ming
       MYSQL_PASSWORD: password
@@ -34,6 +108,7 @@ services:
       - mysql_data_account:/var/lib/mysql
   minio:
     image: minio/minio:RELEASE.2021-03-17T02-33-02Z@sha256:d33b2e9559ee59acf7591cd83cb7238837158a316956e6140e6692a8e4e12fe9
+    restart: always
     volumes:
       - minio_data:/export
     command: server /export
@@ -55,6 +130,7 @@ services:
       "
   cassandra:
     image: docker.io/bitnami/cassandra:3-debian-10
+    restart: always
     ports:
       - 7000:7000
       - 9042:9042
@@ -139,6 +215,7 @@ services:
 volumes:
   mysql_data_account:
   minio_data:
+  cassandra_data:
   redis-node1-data:
   redis-node2-data:
   redis-node3-data:

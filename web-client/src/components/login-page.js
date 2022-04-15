@@ -12,34 +12,32 @@ function LoginPage({ setUser, getUserInfo, logout }) {
       .post('/api/account/auth/login', { email, password: passwd })
       .then(async (res) => {
         const accessToken = res.data.access_token
-        if (accessToken) {
-          console.log({ accessToken })
-          let user
-          try {
-            user = await getUserInfo(accessToken)
-            if (!user.firstname || !user.lastname) {
-              alert('get uesr info error')
-              return navigate('/login')
-            }
-          } catch (err) {
-            console.log(err)
-            logout()
-            alert('get uesr info error')
-            return navigate('/login')
-          }
+        const refreshToken = res.data.refresh_token
+        let user
+        try {
+          user = await getUserInfo(accessToken)
           localStorage.setItem('access_token', accessToken)
+          localStorage.setItem('refresh_token', refreshToken)
           localStorage.setItem('firstname', user.firstname)
           localStorage.setItem('lastname', user.lastname)
           localStorage.setItem('user_id', user.id)
-          setUser((prev) => ({ ...prev, ...user, userId: user.id, accessToken: accessToken, isLogin: true }))
-          navigate('/chat')
-        } else {
-          alert('Login fail')
+          setUser((prev) => ({
+            ...prev,
+            ...user,
+            userId: user.id,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            isLogin: true,
+          }))
+          navigate('/')
+        } catch (err) {
+          console.log(err)
+          logout()
         }
       })
       .catch((err) => {
         console.log(err)
-        alert('Something wrong occurs when login')
+        alert('Something wrong happened when login')
       })
   }
 

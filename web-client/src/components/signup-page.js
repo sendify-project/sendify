@@ -24,7 +24,6 @@ function SignupPage() {
       })
       .then(async (res) => {
         if (res.data.access_token) {
-          alert('sign up success')
           navigate('/login')
         } else {
           alert('Sign up fail')
@@ -32,7 +31,7 @@ function SignupPage() {
       })
       .catch((err) => {
         console.log(err)
-        alert('Something wrong occurs')
+        alert('Something wrong happened')
       })
   }
 

@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import socketIOClient from 'socket.io-client'
 import JSONbig from 'json-bigint'
-import SidebarItem from 'Components/sidebar-item'
-import ChatItem from 'Components/chat-item'
+import SidebarItem from './sidebar-item'
+import ChatItem from './chat-item'
 import axios from 'axios'
 import prettyBytes from 'pretty-bytes'
 
 let UserList = {}
 
-function ChatPage({ user, logout }) {
+function ChatPage({ user, logout, handleRefresh }) {
+  const navigate = useNavigate()
   const chatContentDom = useRef(null)
   const [message, setMessage] = useState([
     { type: 'text', content: 'Welcome! Please choose or create a channel', username: 'System', createdAt: new Date() },
@@ -22,7 +23,7 @@ function ChatPage({ user, logout }) {
   })
   const [channels, setChannels] = useState([])
   const [socket, setSocket] = useState(
-    socketIOClient('/sendify', {
+    socketIOClient('/api/chat', {
       extraHeaders: {
         Authorization: `bearer ${user.accessToken}`,
         'X-User-Id': user.userId,
@@ -34,6 +35,9 @@ function ChatPage({ user, logout }) {
 
   useEffect(() => {
     socket.open()
+    socket.on('connect_failed', () => {
+      navigate('/')
+    })
     socket.on('message', (data) => {
       setMessage((prev) => [...prev, data])
       chatContentDom.current.scrollTo({
@@ -60,14 +64,13 @@ function ChatPage({ user, logout }) {
       socket.emit('join', { room: currentChannel.name }, (error) => {
         if (error) {
           console.log(error)
-          alert(error)
         } else {
           fetchMsgByChannels(currentChannel.id)
         }
       })
       setMessage([])
     }
-  }, [user.name, currentChannel.name])
+  }, [currentChannel.name])
 
   const fetchChannels = () => {
     axios
@@ -83,7 +86,7 @@ function ChatPage({ user, logout }) {
       })
       .catch((err) => {
         console.log(err)
-        alert('fail to get channels list')
+        alert('Fail to get channels list')
       })
   }
 
@@ -137,7 +140,7 @@ function ChatPage({ user, logout }) {
       })
       .catch((err) => {
         console.log(err)
-        alert('fail to get channels list')
+        alert('Fail to get channels list')
       })
   }
 
@@ -150,7 +153,7 @@ function ChatPage({ user, logout }) {
       })
       .catch((err) => {
         console.log(err)
-        alert('Something wrong occurs when deleting channel')
+        alert('Something wrong happened when deleting channel')
       })
   }
 
@@ -169,7 +172,7 @@ function ChatPage({ user, logout }) {
         (error) => {
           if (error) {
             console.log(error)
-            alert('fail to send message')
+            alert('Fail to send message')
           }
         }
       )
@@ -179,7 +182,7 @@ function ChatPage({ user, logout }) {
 
   const handleNewChannelKeyPress = (e) => {
     if (channels.some((c) => c.name === e.target.value)) {
-      return alert('Creating a channel already exists is forbidden')
+      return alert('Channel already exists')
     } else if (e.target.value !== '' && e.key === 'Enter') {
       axios
         .post('/api/channel', { name: e.target.value })
@@ -193,7 +196,7 @@ function ChatPage({ user, logout }) {
         })
         .catch((err) => {
           console.log(err)
-          alert('fail to create new channel')
+          alert('Fail to create new channel')
         })
     }
   }
@@ -202,9 +205,8 @@ function ChatPage({ user, logout }) {
     if (file !== '') {
       const data = new FormData()
       data.append('file', file)
-      const endpoint = process.env.NODE_ENV === 'production' ? '/upload' : 'https://sendify-beta.csie.org/upload'
       axios
-        .post(endpoint, data, {
+        .post('/api/upload', data, {
           headers: {
             Authorization: `bearer ${user.accessToken}`,
             'X-Channel-Id': currentChannel.id,
@@ -228,14 +230,22 @@ function ChatPage({ user, logout }) {
             (error) => {
               if (error) {
                 console.log(error)
-                alert('fail to send message')
+                alert('Fail to send message')
               }
             }
           )
         })
-        .catch((err) => {
-          console.log(err)
-          alert('Something wrong occurs')
+        .catch(async (err) => {
+          if (err.response.status === 401) {
+            try {
+              await handleRefresh(user.refreshToken)
+            } catch (err) {
+              console.log(err)
+              logout()
+            }
+          } else {
+            alert('Something wrong happened')
+          }
         })
     }
   }

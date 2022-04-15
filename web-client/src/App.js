@@ -1,74 +1,128 @@
-import { useState, useEffect } from 'react'
+import { useState, useLayoutEffect } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
-import LoginPage from 'Components/login-page.js'
-import SignupPage from 'Components/signup-page.js'
-import ChatPage from 'Components/chat-page.js'
+import LoginPage from './components/login-page'
+import SignupPage from './components/signup-page'
+import ChatPage from './components/chat-page'
+import JSONbig from 'json-bigint'
 import axios from 'axios'
 
 function App() {
+  const accessToken = localStorage.getItem('access_token') || ''
+  const refreshToken = localStorage.getItem('refresh_token') || ''
+  const firstname = localStorage.getItem('firstname') || ''
+  const lastname = localStorage.getItem('lastname') || ''
+  const userId = localStorage.getItem('user_id') || undefined
+  let isLogin = false
+  if (accessToken !== '' && refreshToken !== '' && !isTokenExpired(accessToken)) {
+    isLogin = true
+  }
   const [user, setUser] = useState({
-    name: '',
-    accessToken: '',
-    firstname: '',
-    lastname: '',
-    userId: '',
-    isLogin: false,
+    accessToken: accessToken,
+    refreshToken: refreshToken,
+    firstname: firstname,
+    lastname: lastname,
+    userId: userId,
+    isLogin: isLogin,
   })
   const navigate = useNavigate()
 
   const logout = () => {
-    setUser({ name: '', accessToken: '', firstname: '', lastname: '', userId: undefined, isLogin: false })
+    setUser({ accessToken: '', refreshToken: '', firstname: '', lastname: '', userId: undefined, isLogin: false })
     localStorage.removeItem('access_token')
     navigate('/login')
   }
 
+  const handleRefresh = (refreshToken) => {
+    return axios.post('/api/account/auth/refresh', { refresh_token: refreshToken }).then(async (res) => {
+      const newAccessToken = res.data.access_token
+      const newRefreshToken = res.data.refresh_token
+      let user
+      try {
+        user = await getUserInfo(newAccessToken)
+        localStorage.setItem('access_token', newAccessToken)
+        localStorage.setItem('refresh_token', newRefreshToken)
+        localStorage.setItem('firstname', user.firstname)
+        localStorage.setItem('lastname', user.lastname)
+        localStorage.setItem('user_id', user.id)
+        setUser((prev) => ({
+          ...prev,
+          ...user,
+          userId: user.id,
+          accessToken: newAccessToken,
+          refreshToken: newRefreshToken,
+          isLogin: true,
+        }))
+        navigate('/')
+      } catch (err) {
+        console.log(err)
+      }
+    })
+  }
+
+  useLayoutEffect(() => {
+    if (user.accessToken !== '' && user.refreshToken !== '' && isTokenExpired(user.accessToken)) {
+      handleRefresh(user.refreshToken)
+    }
+  }, [])
+
   return (
     <>
-      <CheckLocalStorage user={user} setUser={setUser} />
       <Routes>
         <Route exact path='/' element={user.isLogin ? <Navigate to='/chat' /> : <Navigate to='/login' />} />
         <Route path='/login' element={<LoginPage setUser={setUser} getUserInfo={getUserInfo} logout={logout} />} />
-        <Route path='/signup' element={<SignupPage setUser={setUser} getUserInfo={getUserInfo} logout={logout} />} />
+        <Route path='/signup' element={<SignupPage />} />
         <Route
           path='/chat'
-          element={user.isLogin ? <ChatPage user={user} logout={logout} /> : <Navigate to='/login' />}
+          element={
+            user.isLogin ? (
+              <ChatPage user={user} logout={logout} handleRefresh={handleRefresh} />
+            ) : (
+              <Navigate to='/login' />
+            )
+          }
         />
       </Routes>
     </>
   )
 }
 
-function CheckLocalStorage({ user, setUser }) {
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    const accessToken = localStorage.getItem('access_token')
-    const firstname = localStorage.getItem('firstname')
-    const lastname = localStorage.getItem('lastname')
-    const userId = localStorage.getItem('user_id')
-    if (accessToken && accessToken !== '' && accessToken !== user.accessToken) {
-      setUser((prev) => ({ ...prev, accessToken, firstname, lastname, userId, isLogin: true }))
-      navigate('/chat')
-    }
-  }, [])
-
-  return <></>
-}
-
-function getUserInfo(accessToken) {
+const getUserInfo = (accessToken) => {
   return axios
-    .get('/api/account', {
+    .get('/api/account/info/person', {
       headers: {
         Authorization: `bearer ${accessToken}`,
       },
+      transformResponse: (res) => {
+        return JSONbig({ storeAsString: true }).parse(res)
+      },
     })
     .then((res) => {
-      if (!res.data.firstname || !res.data.lastname) {
-        throw new Error('get user info failed')
+      if (!res.data.firstname || !res.data.lastname || !res.data.id) {
+        throw new Error('get account person info failed')
       } else {
         return res.data
       }
     })
+}
+
+function isTokenExpired(token) {
+  let decodedToken = parseJwt(token)
+  return Date.now() >= decodedToken.exp * 1000
+}
+
+function parseJwt(token) {
+  var base64Url = token.split('.')[1]
+  var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+  var jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      })
+      .join('')
+  )
+
+  return JSON.parse(jsonPayload)
 }
 
 export default App

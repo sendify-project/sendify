@@ -42,6 +42,7 @@ services:
       - "traefik.http.routers.api-chat.entrypoints=web"
       - "traefik.http.routers.api-chat.service=api-chat"
       - "traefik.http.services.api-chat.loadbalancer.server.port=3000"
+      - "traefik.http.routers.api-chat.middlewares=sendify-auth"
       - "traefik.http.middlewares.sendify-auth.forwardauth.address=http://api-account/api/account/forwardauth"
       - "traefik.http.middlewares.sendify-auth.forwardauth.authResponseHeaders=X-User-Id, X-Username"
   api-object:
@@ -60,6 +61,7 @@ services:
       - "traefik.http.routers.api-object.entrypoints=web"
       - "traefik.http.routers.api-object.service=api-object"
       - "traefik.http.services.api-object.loadbalancer.server.port=5000"
+      - "traefik.http.routers.api-object.middlewares=sendify-auth"
       - "traefik.http.middlewares.sendify-auth.forwardauth.address=http://api-account/api/account/forwardauth"
       - "traefik.http.middlewares.sendify-auth.forwardauth.authResponseHeaders=X-User-Id, X-Username"
   api-store:

@@ -1,11 +1,11 @@
-CREATE KEYSPACE sendify WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 1};
+CREATE KEYSPACE IF NOT EXISTS sendify WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 1};
 USE sendify;
-CREATE TABLE channels (
+CREATE TABLE IF NOT EXISTS channels (
     id varint,
     name varchar,
     PRIMARY KEY(id)
 );
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
     channel_id varint,
     id varint,
     user_id varint,
